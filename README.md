@@ -4,6 +4,11 @@ Este proyecto fue desarrollado para la materia **Tecnologias para la Gestion**. 
 
 Por motivos de privacidad y confidencialidad academica, la identidad comercial de la empresa se mantiene bajo reserva.
 
+## Aplicacion Desplegada
+
+El dashboard interactivo se encuentra disponible publicamente en:
+- **Enlace de la aplicacion:** [https://tecnologias-webscrapping.streamlit.app](https://tecnologias-webscrapping.streamlit.app)
+
 ## Estructura del Proyecto
 
 - `app.py`: Dashboard interactivo desarrollado en Streamlit con filtros temporales, indicadores de gestion, visualizaciones y explorador de resenas.
@@ -12,12 +17,12 @@ Por motivos de privacidad y confidencialidad academica, la identidad comercial d
 - `resenas_categorizadas.csv`: Dataset procesado con clasificacion tematica y año estimado.
 - `grafico_top_quejas.png`: Grafico de distribucion de las principales categorias de reclamos.
 
-## Requisitos e Instalacion
+## Requisitos e Instalacion Local
 
 1. Clonar el repositorio:
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd tecnologias
+   git clone https://github.com/reigenabril/tecnologias-webscrapping.git
+   cd tecnologias-webscrapping
    ```
 
 2. Crear y activar un entorno virtual:
@@ -31,9 +36,9 @@ Por motivos de privacidad y confidencialidad academica, la identidad comercial d
    pip install -r requirements.txt
    ```
 
-## Ejecucion del Dashboard
+## Ejecucion Local del Dashboard
 
-Para iniciar la aplicacion interactiva de Streamlit:
+Para iniciar la aplicacion de forma local:
 
 ```bash
 streamlit run app.py
