@@ -22,6 +22,21 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_CATEGORIZADAS = os.path.join(BASE_DIR, "resenas_categorizadas.csv")
 CSV_ORIGINAL = os.path.join(BASE_DIR, "resenas_emporio_terciado_3_o_menos.csv")
 
+# Paleta Okabe-Ito con alto contraste de luminancia y diferenciación para deuteranopia/protanopia
+COLOR_1_STAR = "#0072B2"  # Azul profundo
+COLOR_2_STAR = "#E69F00"  # Naranja / Ámbar de alta luminancia
+COLOR_3_STAR = "#009E73"  # Verde azulado
+
+OKABE_ITO_PALETTE = [
+    "#0072B2",  # Azul
+    "#E69F00",  # Naranja
+    "#009E73",  # Verde azulado
+    "#CC79A7",  # Púrpura rojizo
+    "#56B4E9",  # Celeste cielo
+    "#D55E00",  # Bermellón
+    "#718096"   # Gris neutro
+]
+
 # Custom CSS
 st.markdown("""
 <style>
@@ -54,13 +69,13 @@ st.markdown("""
         font-weight: 500;
     }
     .quote-box {
-        background-color: #FFF7ED;
-        border-left: 4px solid #D55E00;
+        background-color: #F8FAFC;
+        border-left: 4px solid #0072B2;
         padding: 0.8rem 1.2rem;
         margin: 0.8rem 0;
         border-radius: 4px;
         font-style: italic;
-        color: #7C2D12;
+        color: #1E293B;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -121,7 +136,6 @@ menu = st.sidebar.radio(
 st.sidebar.markdown("---")
 st.sidebar.subheader("Filtro por Años")
 
-# Filtro de rango de años
 rango_anios = st.sidebar.slider(
     "Selecciona el rango de años:",
     min_value=min_year,
@@ -227,14 +241,14 @@ if menu == "Resumen Ejecutivo":
                 y="Categoría",
                 orientation="h",
                 text=cat_data.apply(lambda r: f"{r['Cantidad']} ({r['Porcentaje']}%)", axis=1),
-                color="Cantidad",
-                color_continuous_scale=["#56B4E9", "#D55E00"],
+                color="Categoría",
+                color_discrete_sequence=OKABE_ITO_PALETTE,
             )
             fig.update_layout(
                 yaxis=dict(autorange="reversed"),
                 xaxis_title="Cantidad de Reseñas",
                 yaxis_title="",
-                coloraxis_showscale=False,
+                showlegend=False,
                 height=380,
                 margin=dict(l=10, r=20, t=10, b=10)
             )
@@ -256,7 +270,7 @@ if menu == "Resumen Ejecutivo":
                 values="Cantidad",
                 hole=0.45,
                 color="Estrellas",
-                color_discrete_map={1: "#D55E00", 2: "#E69F00", 3: "#56B4E9"}
+                color_discrete_map={1: COLOR_1_STAR, 2: COLOR_2_STAR, 3: COLOR_3_STAR}
             )
             fig_pie.update_layout(height=380, margin=dict(l=10, r=10, t=10, b=10))
             st.plotly_chart(fig_pie, use_container_width=True)
@@ -295,7 +309,7 @@ elif menu == "Evolución Temporal":
         color="estrellas_str",
         title=f"Volumen Anual de Reseñas ({rango_anios[0]} - {rango_anios[1]})",
         labels={"anio_estimado": "Año", "cantidad": "Cantidad de Reseñas", "estrellas_str": "Calificación"},
-        color_discrete_map={"1 Estrella": "#D55E00", "2 Estrellas": "#E69F00", "3 Estrellas": "#56B4E9"},
+        color_discrete_map={"1 Estrella": COLOR_1_STAR, "2 Estrellas": COLOR_2_STAR, "3 Estrellas": COLOR_3_STAR},
         barmode="stack"
     )
     fig_evol.update_layout(
@@ -316,7 +330,7 @@ elif menu == "Evolución Temporal":
             x="anio_estimado",
             y="quejas",
             color="categoria_principal",
-            color_discrete_sequence=["#D55E00", "#0072B2", "#009E73", "#E69F00", "#CC79A7", "#56B4E9"],
+            color_discrete_sequence=OKABE_ITO_PALETTE,
             markers=True,
             labels={"anio_estimado": "Año", "quejas": "Cantidad de Quejas", "categoria_principal": "Motivo"},
             title="Tendencia Anual por Categoría de Queja"
