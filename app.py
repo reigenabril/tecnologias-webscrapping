@@ -235,6 +235,7 @@ if menu == "Resumen Ejecutivo":
             cat_data.columns = ["Categoría", "Cantidad"]
             cat_data["Porcentaje"] = (cat_data["Cantidad"] / len(df_filtrado_texto) * 100).round(1)
             
+            # Gráfico de barras ordenado de mayor a menor (mayor arriba)
             fig = px.bar(
                 cat_data,
                 x="Cantidad",
@@ -245,7 +246,7 @@ if menu == "Resumen Ejecutivo":
                 color_discrete_sequence=OKABE_ITO_PALETTE,
             )
             fig.update_layout(
-                yaxis=dict(autorange="reversed"),
+                yaxis={'categoryorder': 'total ascending'},
                 xaxis_title="Cantidad de Reseñas",
                 yaxis_title="",
                 showlegend=False,
