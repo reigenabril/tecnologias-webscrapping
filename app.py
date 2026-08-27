@@ -509,50 +509,50 @@ elif menu == "Explorador de Reseñas":
     )
 
 
-# ==========================================
+## ==========================================
 # 5. MATRIZ FODA ESTRATÉGICA
 # ==========================================
 elif menu == "Matriz FODA":
-    st.markdown('<div class="main-header">Matriz FODA y Diagnóstico Estratégico</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Cruce analítico entre la <b>identidad institucional declarada</b> y los <b>puntos de dolor empíricos</b> de los clientes</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">Matriz FODA: Foco en Tecnologías y Procesos</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Diagnóstico estratégico: Análisis de <b>procesos de negocio</b>, <b>brechas tecnológicas</b> e impacto en la experiencia del cliente</div>', unsafe_allow_html=True)
 
-    # Métricas destacadas del cruce
+    # Métricas destacadas del cruce tecnológico y de procesos
     m1, m2, m3, m4 = st.columns(4)
     with m1:
         st.markdown("""
         <div class="metric-card">
-            <div class="metric-value">1962</div>
-            <div class="metric-label">Fundación (+60 Años de Trayectoria)</div>
+            <div class="metric-value" style="color: #D55E00;">3 Pasos</div>
+            <div class="metric-label">Circuito Fragmentado (Venta &rarr; Caja &rarr; Despacho)</div>
         </div>
         """, unsafe_allow_html=True)
     with m2:
         st.markdown("""
         <div class="metric-card">
-            <div class="metric-value">+20 Años</div>
-            <div class="metric-label">Liderazgo en Construcción en Seco</div>
+            <div class="metric-value" style="color: #D55E00;">0% CRM</div>
+            <div class="metric-label">Canales Remotos sin Ticketing / Chatbot</div>
         </div>
         """, unsafe_allow_html=True)
     with m3:
         st.markdown("""
         <div class="metric-card">
-            <div class="metric-value" style="color: #D55E00;">56.0%</div>
-            <div class="metric-label">Quejas por Trato y Atención</div>
+            <div class="metric-value" style="color: #0072B2;">82.0%</div>
+            <div class="metric-label">Quejas Derivadas de Fricción Operativa y Procesos</div>
         </div>
         """, unsafe_allow_html=True)
     with m4:
         st.markdown("""
         <div class="metric-card">
-            <div class="metric-value" style="color: #0072B2;">26.0%</div>
-            <div class="metric-label">Fricción en Esperas y Canales</div>
+            <div class="metric-value" style="color: #009E73;">Optimizador</div>
+            <div class="metric-label">Tecnología en Taller (Corte Computarizado)</div>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     tab_foda, tab_cruces, tab_gap = st.tabs([
-        "Matriz Cuadrante FODA",
-        "Estrategias y Cruces (FO, DO, FA, DA)",
-        "Diagnóstico de Brecha (Discurso vs. Realidad)"
+        "Matriz Cuadrante FODA (Tecnología y Procesos)",
+        "Cruces Estratégicos (FO, DO, FA, DA)",
+        "Diagnóstico de Brecha (Discurso vs. Procesos Reales)"
     ])
 
     with tab_foda:
@@ -563,14 +563,14 @@ elif menu == "Matriz FODA":
             <div class="foda-card foda-f">
                 <div class="foda-title" style="color: #009E73;">
                     <span>🛡️ FORTALEZAS (Internas)</span>
-                    <span class="foda-badge-f">Capacidades Clave</span>
+                    <span class="foda-badge-f">Capacidades y Tecnología Actual</span>
                 </div>
                 <ul>
-                    <li><b>Trayectoria y liderazgo consolidado:</b> Más de 60 años en el mercado (fundada en 1962), referente indiscutido en La Plata y alcance de distribución nacional.</li>
-                    <li><b>Amplitud de catálogo y primeras marcas:</b> Especialización en placas aglomeradas, MDF melamínicos, terciados y más de 20 años liderando distribución de construcción en seco bajo norma.</li>
-                    <li><b>Tecnología y servicios de valor agregado:</b> Sistema computarizado con optimizador de corte, pegado de cantos, fresados y mecanizados a medida.</li>
-                    <li><b>Línea de productos propia:</b> Impulso de su marca <i>Area Base</i>.</li>
-                    <li><b>Políticas formales de calidad:</b> Compromiso explícito de la dirección con sistemas de calidad total, reinversión de ganancias y relación sólida con proveedores.</li>
+                    <li><b>Tecnología de Taller Computarizada:</b> Incorporación de maquinaria con sistema computarizado de optimización de cortes de placas, mecanizado, fresado y pegado de cantos.</li>
+                    <li><b>Solidez Operativa y Trayectoria (+60 años):</b> Cadena de suministro consolidada con fabricantes líderes de placas (MDF/melaminas) y construcción en seco bajo normas de calidad.</li>
+                    <li><b>Infraestructura Logística y Depósito:</b> Capacidad instalada para abastecimiento de gran volumen a revendedores y constructoras en La Plata y a nivel nacional.</li>
+                    <li><b>Control de Producto Propio:</b> Desarrollo de la línea de productos <i>Area Base</i>, permitiendo control directo de estándares y márgenes.</li>
+                    <li><b>Estructura Formal de Calidad:</b> Políticas de calidad total y directrices orientadas a la mejora continua y asociatividad con proveedores.</li>
                 </ul>
             </div>
             """, unsafe_allow_html=True)
@@ -578,15 +578,17 @@ elif menu == "Matriz FODA":
             st.markdown("""
             <div class="foda-card foda-d">
                 <div class="foda-title" style="color: #D55E00;">
-                    <span>⚠️ DEBILIDADES (Internas)</span>
-                    <span class="foda-badge-d">Puntos Críticos Detectados</span>
+                    <span>⚠️ DEBILIDADES (Internas - Procesos y Tecnología)</span>
+                    <span class="foda-badge-d">Focos Críticos de Ineficiencia</span>
                 </div>
                 <ul>
-                    <li><b>Grave brecha en atención al cliente (56.0% de quejas):</b> Destrato, falta de predisposición y desidia en cajas y mostrador de ventas (inconsistencia con su política de "desarrollo humano").</li>
-                    <li><b>Cuellos de botella y demoras operativas (17.3% de quejas):</b> Circuitos burocráticos con filas sucesivas (mostrador &rarr; caja &rarr; despacho / taller).</li>
-                    <li><b>Colapso de canales remotos (8.7% de quejas):</b> Teléfonos sin respuesta, llamadas cortadas y demoras prolongadas para cotizaciones por WhatsApp.</li>
-                    <li><b>Fricciones en el servicio de taller:</b> Horarios acotados de corte, desajustes en plazos de entrega y errores dimensionales.</li>
-                    <li><b>Gestión reactiva de reputación digital:</b> Casi el 70% de las reseñas de 1 a 3 estrellas carecen de respuesta institucional o seguimiento.</li>
+                    <li><b>Fragmentación del Proceso de Compra Presencial:</b> Flujo secuencial desconectado que obliga al cliente a 3 filas obligatorias (1. Asesor/Ventas &rarr; 2. Caja/Facturación &rarr; 3. Despacho/Corte). Ausencia de punto de venta integrado o terminales de cobro móviles (mPOS) en mostrador.</li>
+                    <li><b>Inexistencia de Sistema de Gestión de Esperas (Turnero Digital):</b> Ausencia de turnero inteligente con visualización en pantalla o alerta móvil para despacho y corte, provocando incertidumbre y esperas físicas prolongadas.</li>
+                    <li><b>Canales Remotos Desarticulados (Sin CRM ni Automatización):</b> WhatsApp y líneas telefónicas gestionadas de forma artesanal por personal de salón, sin <i>ticketing</i> ni chatbots de preguntas frecuentes; genera llamadas colgadas y demoras de días en presupuestos.</li>
+                    <li><b>Brecha de Autogestión y E-Commerce:</b> A pesar de contar con optimizador de cortes interno, no existe una plataforma web de autogestión para que profesionales carguen sus planos de despiece, coticen y paguen 100% online.</li>
+                    <li><b>Desconexión entre Sistemas de Información (ERP, Stock y Taller):</b> Desalineación entre el stock real de salón, la cola de trabajo del taller de corte y los mostradores de venta, generando discrepancias de precios y faltantes no advertidos.</li>
+                    <li><b>Sobrecarga del Factor Humano por Fricción de Sistemas:</b> El 56% de quejas por "mala atención" es consecuencia directa del colapso operativo: empleados saturados por tareas administrativas manuales y atención simultánea presencial/telefónica.</li>
+                    <li><b>Falta de Monitoreo Digital de Satisfacción (Feedback Loop):</b> Ausencia de captura digital de satisfacción en el punto de cobro (NPS/CSAT vía tablet/QR) y desatención sistemática de la reputación en Google Maps (68.3% sin respuesta).</li>
                 </ul>
             </div>
             """, unsafe_allow_html=True)
@@ -596,14 +598,14 @@ elif menu == "Matriz FODA":
             <div class="foda-card foda-o">
                 <div class="foda-title" style="color: #0072B2;">
                     <span>🚀 OPORTUNIDADES (Externas)</span>
-                    <span class="foda-badge-o">Potencial de Crecimiento</span>
+                    <span class="foda-badge-o">Innovación y Digitalización</span>
                 </div>
                 <ul>
-                    <li><b>Auge del diseño de interiores y construcción en seco:</b> Creciente demanda de arquitectos, carpinteros, diseñadores y público <i>Do-It-Yourself</i>.</li>
-                    <li><b>Digitalización y autogestión:</b> Incorporación de cotizadores online de placas y cortes con stock en tiempo real, agilizando el flujo previo al local.</li>
-                    <li><b>Fidelización B2B especializada:</b> Creación de canales preferenciales y programas de beneficios para gremios, instaladores y constructoras.</li>
-                    <li><b>Automatización omnicanal:</b> Implementación de chatbots en WhatsApp para consultas de catálogo, horarios y estado de pedidos.</li>
-                    <li><b>Capacitación técnica abierta:</b> Posicionamiento como polo formador en sistemas constructivos modernos en la región.</li>
+                    <li><b>Portal Web B2B de Autogestión y Despiece 24/7:</b> Habilitar una plataforma digital de corte y compra online para carpinteros, arquitectos y constructores, descongestionando el local físico.</li>
+                    <li><b>Automatización Omnicanal de WhatsApp:</b> Implementar CRM conversacional y chatbot con IA para cotizaciones rápidas, catálogo, horarios y consulta de estado de pedidos.</li>
+                    <li><b>Reingeniería 'Smart Retail' en Salón:</b> Digitalizar el salón con turneros inteligentes por QR, pantallas de seguimiento de corte y cobro integrado en el puesto de venta.</li>
+                    <li><b>Integración ERP End-to-End:</b> Trazabilidad unificada en tiempo real: desde el ingreso de mercadería y cola de corte hasta la facturación y el despacho final.</li>
+                    <li><b>Capacitación Virtual y Fidelización Profesional:</b> Plataforma de formación online sobre construcción en seco y herrajes para consolidar la comunidad técnica de la región.</li>
                 </ul>
             </div>
             """, unsafe_allow_html=True)
@@ -612,84 +614,81 @@ elif menu == "Matriz FODA":
             <div class="foda-card foda-a">
                 <div class="foda-title" style="color: #E69F00;">
                     <span>⚡ AMENAZAS (Externas)</span>
-                    <span class="foda-badge-a">Riesgos del Entorno</span>
+                    <span class="foda-badge-a">Disrupción y Competencia</span>
                 </div>
                 <ul>
-                    <li><b>Fuga de clientes a competidores ágiles:</b> Madereras locales y grandes cadenas (Easy, Sodimac) con procesos de cobro y despacho más dinámicos.</li>
-                    <li><b>Deterioro de reputación de marca:</b> Reseñas públicas negativas en Google Maps y redes sociales que disuaden a potenciales compradores.</li>
-                    <li><b>Volatilidad macroeconómica y de precios:</b> Inflación y disparidad de precios que generan fricción al cotizar o facturar.</li>
-                    <li><b>Creciente exigencia de inmediatez:</b> Clientes que penalizan la espera física y la falta de respuesta inmediata en canales digitales.</li>
+                    <li><b>Competidores Nativos Digitales y Grandes Cadenas:</b> Superficies comerciales (Easy, Sodimac) y madereras modernas con e-commerce, cotizadores automáticos y checkout ágil.</li>
+                    <li><b>Obsolescencia ante Nuevos Perfiles de Clientes:</b> Profesionales jóvenes y público DIY que priorizan proveedores con plataformas 100% digitales y respuestas inmediatas.</li>
+                    <li><b>Erosión de Marca en Plataformas Digitales:</b> Reseñas negativas visibles en Google Maps que disuaden a nuevos clientes antes de visitar el local por falta de gestión activa de reputación.</li>
+                    <li><b>Inflación y Desfase en Listas de Precios:</b> Fricción comercial cuando las cotizaciones manuales tardías no coinciden con los precios vigentes al momento de la compra física.</li>
                 </ul>
             </div>
             """, unsafe_allow_html=True)
 
     with tab_cruces:
-        st.subheader("Matriz de Cruces Estratégicos")
+        st.subheader("Matriz de Cruces Estratégicos: Enfoque en Procesos y Tecnología")
         c_fo, c_do = st.columns(2)
         with c_fo:
             st.markdown("""
-            #### 🌟 Estrategias FO (Maxi - Maxi)
-            *Apalancar Fortalezas para capturar Oportunidades:*
-            * **Plataforma Integral de Servicios Digitales:** Utilizar el optimizador de corte computarizado y el amplio catálogo para lanzar un cotizador web con turnero para carpinteros y arquitectos.
-            * **Alianzas B2B con Constructoras:** Aprovechar los 20 años de liderazgo en construcción en seco para ofrecer paquetes integrales de abastecimiento y capacitación técnica.
+            #### 🌟 Estrategias FO (Apalancamiento Tecnológico)
+            * **Plataforma Web de Despiece y Optimización 24/7:** Conectar el software optimizador de cortes computarizado con una interfaz web para que carpinteros suban sus proyectos, coticen y reserven turnos de corte en tiempo real.
+            * **Ecosistema Digital B2B para Construcción en Seco:** Aprovechar el catálogo líder y la escala de distribución para proveer a constructoras con un portal de abastecimiento con seguimiento de stock y entregas.
             """)
 
             st.markdown("""
-            #### 🛡️ Estrategias FA (Maxi - Mini)
-            *Apalancar Fortalezas para mitigar Amenazas:*
-            * **Fidelización y Blindaje de Cartera:** Respaldarse en los más de 60 años de trayectoria y relación con proveedores de primeras marcas para garantizar precios competitivos y disponibilidad frente a grandes cadenas.
-            * **Diferenciación por Asesoramiento Especializado:** Ofrecer servicio técnico de vanguardia en taller y mecanizados que los competidores genéricos no pueden igualar.
+            #### 🛡️ Estrategias FA (Blindaje Tecnológico y Operativo)
+            * **Integración CAD/CAM para Profesionales:** Ofrecer plugins o compatibilidad directa entre programas de diseño de carpintería y el sistema de pedidos de la empresa, creando barreras de salida frente a grandes superficies.
+            * **Trazabilidad y Calidad Certificada:** Garantizar plazos de entrega exactos y tolerancias mínimas en cortes mediante control digital, diferenciándose de competidores informales.
             """)
 
         with c_do:
             st.markdown("""
-            #### 🔄 Estrategias DO (Mini - Maxi)
-            *Superar Debilidades aprovechando Oportunidades:*
-            * **Automatización y Canal WhatsApp Inteligente:** Integrar un chatbot para cotizaciones frecuentes y consultas de stock, liberando a los vendedores para que atiendan con calidez en el salón.
-            * **Reingeniería de Procesos de Compra:** Unificar asesoramiento, cobro y despacho mediante turnero digital para eliminar filas y demoras.
+            #### 🔄 Estrategias DO (Reingeniería y Transformación Digital)
+            * **Implementación de CRM Omnicanal en WhatsApp:** Desconectar la atención telefónica/virtual de los vendedores de salón; implementar chatbot para consultas frecuentes y derivación ágil de presupuestos complejos.
+            * **Reingeniería del Circuito de Tienda (Turnero + mPOS):** Eliminar la triple fila implementando turneros digitales con aviso al móvil y cobro directo en el mostrador para compras menores o pedidos preparados.
+            * **Sincronización Total ERP - Stock - Taller:** Integrar la visualización del stock y la cola de trabajo del taller para ofrecer plazos de entrega realistas y evitar quiebres de inventario.
             """)
 
             st.markdown("""
-            #### 🚨 Estrategias DA (Mini - Mini)
-            *Minimizar Debilidades y neutralizar Amenazas:*
-            * **Plan de Choque en Cultura de Servicio:** Capacitación obligatoria al personal de cajas y ventas en habilidades blandas, empatía y resolución de objeciones para frenar la pérdida de clientes.
-            * **Protocolo de Reputación Online:** Responder al 100% de las quejas en Google Maps en menos de 48 hs con soluciones concretas y contacto directo de gerencia.
+            #### 🚨 Estrategias DA (Mitigación de Riesgos Críticos)
+            * **Plan de Choque Operativo y Rediseño de Puestos:** Rediseñar las tareas del personal de caja y mostrador, eliminando la sobrecarga administrativa manual y capacitando en experiencia de cliente para frenar la sangría de clientes.
+            * **Automatización del Circuito de Reputación Online:** Integrar la API de Google Business con un panel interno para responder el 100% de las quejas en menos de 24-48 horas y habilitar captura de satisfacción en caja (QR/Tablet).
             """)
 
     with tab_gap:
-        st.subheader("Diagnóstico de la Brecha: Discurso Institucional vs. Experiencia Real")
-        st.markdown("Comparativa entre los compromisos formalmente declarados por la empresa y la evidencia empírica relevada en la auditoría de clientes:")
+        st.subheader("Diagnóstico de la Brecha: Discurso vs. Procesos y Tecnologías Reales")
+        st.markdown("Contraste técnico entre la política declarada y los puntos de falla en procesos y herramientas de gestión:")
 
         gap_data = [
             {
-                "Pilar Evaluado": "1. Factor Humano y Trato al Cliente",
-                "Postura Institucional Declarada": "Desarrollo permanente del factor humano, capacitación constante, búsqueda de la excelencia y satisfacción total.",
-                "Realidad Empírica (Reseñas)": "56.0% de quejas por maltrato, desidia, mala predisposición en cajas y atención de mala gana.",
-                "Nivel de Brecha": "🔴 Crítica (Urgente)"
+                "Dimensión Tecnológica / Proceso": "1. Circuito de Compra y Atención Presencial",
+                "Postura Institucional Declarada": "Búsqueda de la excelencia operativa y máxima satisfacción del cliente en cada interacción.",
+                "Falla de Proceso / Tecnología Detectada": "Proceso fragmentado en 3 filas sucesivas (Asesor -> Caja -> Despacho). Ausencia de cobro móvil (mPOS) y falta de turnero digital.",
+                "Impacto en Clientes": "56% quejas de atención + 17% quejas de espera (colapso percibido como mala predisposición del personal)."
             },
             {
-                "Pilar Evaluado": "2. Eficiencia y Tiempos de Espera",
-                "Postura Institucional Declarada": "Optimización continua de procesos, sistemas ágiles y servicio integral oportuno.",
-                "Realidad Empírica (Reseñas)": "17.3% de quejas por demoras excesivas, circuitos burocráticos con 3 filas consecutivas para una sola compra.",
-                "Nivel de Brecha": "🟠 Alta (Prioritaria)"
+                "Dimensión Tecnológica / Proceso": "2. Gestión de Canales Remotos (WhatsApp / Teléfono)",
+                "Postura Institucional Declarada": "Interacción y sinergia fluida con clientes y soluciones integrales de asesoramiento.",
+                "Falla de Proceso / Tecnología Detectada": "Inexistencia de CRM, ticketing o chatbots. Vendedores de salón atienden teléfonos y WhatsApp a la par de clientes en piso.",
+                "Impacto en Clientes": "8.7% quejas: llamadas colgadas, teléfonos que no atienden y demoras de días para recibir un presupuesto."
             },
             {
-                "Pilar Evaluado": "3. Canales de Contacto Remoto",
-                "Postura Institucional Declarada": "Interacción fluida con clientes y soluciones integrales de asesoramiento.",
-                "Realidad Empírica (Reseñas)": "8.7% de quejas por teléfonos desatendidos, llamadas colgadas y presupuestos de WhatsApp demorados por días.",
-                "Nivel de Brecha": "🟠 Alta (Prioritaria)"
+                "Dimensión Tecnológica / Proceso": "3. Servicio de Taller y Optimización de Cortes",
+                "Postura Institucional Declarada": "Sistema computarizado de optimización de cortes y mecanizado de vanguardia para trabajos de excelencia.",
+                "Falla de Proceso / Tecnología Detectada": "El optimizador es de uso interno exclusivo; no está abierto vía web a clientes. Falta de sincronización de tiempos de taller en el mostrador.",
+                "Impacto en Clientes": "Reclamos por horarios rígidos de recepción de corte, esperas de taller y discrepancias en plazos de entrega."
             },
             {
-                "Pilar Evaluado": "4. Taller de Cortes y Dimensionado",
-                "Postura Institucional Declarada": "Sistema computarizado de optimización de cortes, mecanizado de vanguardia y máxima precisión.",
-                "Realidad Empírica (Reseñas)": "Reclamos puntuales por horarios restrictivos para cortar y demoras en la preparación de pedidos.",
-                "Nivel de Brecha": "🟡 Media (Mejora Continua)"
+                "Dimensión Tecnológica / Proceso": "4. Integración de Sistemas de Información (ERP / Stock)",
+                "Postura Institucional Declarada": "Garantizar procesos confiables, capaces y seguros desde el inicio promoviendo la gestión de riesgos.",
+                "Falla de Proceso / Tecnología Detectada": "Desfasaje entre cotizaciones manuales, inventario físico disponible y valores finales facturados en caja.",
+                "Impacto en Clientes": "Quejas sobre precios discordantes entre consulta y cobro, y faltantes no anticipados de placas."
             },
             {
-                "Pilar Evaluado": "5. Gestión de Calidad y Reputación",
-                "Postura Institucional Declarada": "Sistema de gestión de calidad total, indicadores a procesos críticos y fidelización activa.",
-                "Realidad Empírica (Reseñas)": "Casi 70% de las quejas públicas no tienen respuesta oficial, evidenciando gestión reactiva.",
-                "Nivel de Brecha": "🟠 Alta (Prioritaria)"
+                "Dimensión Tecnológica / Proceso": "5. Reputación Digital y Medición de Calidad (CX)",
+                "Postura Institucional Declarada": "Sistema de gestión de calidad total con indicadores asociados a procesos críticos y mejora continua.",
+                "Falla de Proceso / Tecnología Detectada": "Falta de medición de NPS/CSAT en el punto de cobro. Gestión reactiva de Google Maps con 68.3% de reseñas negativas sin respuesta.",
+                "Impacto en Clientes": "Deterioro público de la calificación de la empresa (promedio bajo) sin canal de contención gerencial."
             }
         ]
 
