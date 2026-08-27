@@ -60,7 +60,7 @@ def parse_year(fecha_str: str, current_year: int = 2026) -> int:
     f = fecha_str.lower()
     if any(w in f for w in ['mes', 'semana', 'dia', 'hora']):
         return current_year
-    if 'un anio' in f or 'un año' in f or '1 anio' in f or '1 año' in f:
+    if 'un año' in f or 'un año' in f or '1 año' in f or '1 año' in f:
         return current_year - 1
     m = re.search(r'(\d+)\s+a[nñ]o', f)
     if m:
@@ -108,7 +108,7 @@ def main():
         
     df["categorias"] = [", ".join(c) for c in categorias_activas]
     df["categoria_principal"] = categorias_principales
-    df["anio_estimado"] = df["fecha"].apply(parse_year)
+    df["año_estimado"] = df["fecha"].apply(parse_year)
     
     for cat in CATEGORIAS.keys():
         df[f"cat_{cat}"] = df["texto"].fillna("").apply(

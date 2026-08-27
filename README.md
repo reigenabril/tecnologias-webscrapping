@@ -9,7 +9,7 @@ Por motivos de privacidad y confidencialidad academica, la identidad comercial d
 - `app.py`: Dashboard interactivo desarrollado en Streamlit con filtros temporales, indicadores de gestion, visualizaciones y explorador de resenas.
 - `analisis_quejas.py`: Script de procesamiento de lenguaje natural y categorizacion tematica de motivos de queja.
 - `scrape_reviews.py`: Script de extraccion automatizada de resenas publicas utilizando Playwright.
-- `resenas_categorizadas.csv`: Dataset procesado con clasificacion tematica y anio estimado.
+- `resenas_categorizadas.csv`: Dataset procesado con clasificacion tematica y año estimado.
 - `grafico_top_quejas.png`: Grafico de distribucion de las principales categorias de reclamos.
 
 ## Requisitos e Instalacion
