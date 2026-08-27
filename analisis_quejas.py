@@ -10,9 +10,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-CSV_INPUT = "/Users/abril/tecnologias/resenas_emporio_terciado_3_o_menos.csv"
-CSV_OUTPUT = "/Users/abril/tecnologias/resenas_categorizadas.csv"
-IMG_OUTPUT = "/Users/abril/tecnologias/grafico_top_quejas.png"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CSV_INPUT = os.path.join(BASE_DIR, "resenas_emporio_terciado_3_o_menos.csv")
+CSV_OUTPUT = os.path.join(BASE_DIR, "resenas_categorizadas.csv")
+IMG_OUTPUT = os.path.join(BASE_DIR, "grafico_top_quejas.png")
 
 CATEGORIAS = {
     "Atención y Trato del Personal": [
@@ -60,7 +61,7 @@ def parse_year(fecha_str: str, current_year: int = 2026) -> int:
     f = fecha_str.lower()
     if any(w in f for w in ['mes', 'semana', 'dia', 'hora']):
         return current_year
-    if 'un año' in f or 'un año' in f or '1 año' in f or '1 año' in f:
+    if 'un anio' in f or 'un año' in f or '1 anio' in f or '1 año' in f:
         return current_year - 1
     m = re.search(r'(\d+)\s+a[nñ]o', f)
     if m:
@@ -108,7 +109,7 @@ def main():
         
     df["categorias"] = [", ".join(c) for c in categorias_activas]
     df["categoria_principal"] = categorias_principales
-    df["año_estimado"] = df["fecha"].apply(parse_year)
+    df["anio_estimado"] = df["fecha"].apply(parse_year)
     
     for cat in CATEGORIAS.keys():
         df[f"cat_{cat}"] = df["texto"].fillna("").apply(

@@ -17,8 +17,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-CSV_CATEGORIZADAS = "/Users/abril/tecnologias/resenas_categorizadas.csv"
-CSV_ORIGINAL = "/Users/abril/tecnologias/resenas_emporio_terciado_3_o_menos.csv"
+# Rutas dinámicas compatibles con ejecución local y despliegue en Streamlit Cloud
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CSV_CATEGORIZADAS = os.path.join(BASE_DIR, "resenas_categorizadas.csv")
+CSV_ORIGINAL = os.path.join(BASE_DIR, "resenas_emporio_terciado_3_o_menos.csv")
 
 # Custom CSS
 st.markdown("""
@@ -83,14 +85,21 @@ def parse_year(fecha_str: str, current_year: int = 2026) -> int:
 def load_data():
     if os.path.exists(CSV_CATEGORIZADAS):
         df = pd.read_csv(CSV_CATEGORIZADAS)
-    else:
+    elif os.path.exists(CSV_ORIGINAL):
         df = pd.read_csv(CSV_ORIGINAL)
+    else:
+        st.error("No se encontró el archivo de datos CSV.")
+        return pd.DataFrame()
+        
     if "anio_estimado" not in df.columns:
         df["anio_estimado"] = df["fecha"].apply(parse_year)
     return df
 
 
 df = load_data()
+if df.empty:
+    st.stop()
+
 min_year = int(df["anio_estimado"].min())
 max_year = int(df["anio_estimado"].max())
 
@@ -329,12 +338,10 @@ elif menu == "Top Motivos de Queja":
     if len(df_filtrado_texto) == 0:
         st.warning("No hay suficientes reseñas con texto en el rango de años seleccionado para elaborar el diagnóstico.")
     else:
-        # Calcular el top dinámico según el período filtrado
         top_series = df_filtrado_texto["categoria_principal"].value_counts()
         top_categories = list(top_series.index[:3])
         total_periodo_texto = len(df_filtrado_texto)
 
-        # Crear pestañas dinámicas
         tab_names = []
         for i, cat in enumerate(top_categories, 1):
             cnt = top_series[cat]
@@ -344,7 +351,6 @@ elif menu == "Top Motivos de Queja":
 
         tabs = st.tabs(tab_names)
 
-        # Renderizar cada una de las pestañas del top dinámico
         for i, cat in enumerate(top_categories):
             with tabs[i]:
                 cnt = top_series[cat]
@@ -357,7 +363,6 @@ elif menu == "Top Motivos de Queja":
                 
                 col_t1, col_t2 = st.columns([7, 3])
                 with col_t1:
-                    # Diagnóstico cualitativo según la categoría
                     if "Atención" in cat or "Trato" in cat:
                         diag_text = "Principal foco de insatisfacción en el período seleccionado. Se concentran reclamos sobre la predisposición en cajas y mostrador de ventas, falta de asesoramiento y actitudes percibidas como distantes o poco colaborativas."
                     elif "Espera" in cat or "Demora" in cat:
@@ -377,7 +382,6 @@ elif menu == "Top Motivos de Queja":
                     st.write(diag_text)
 
                     st.markdown("**Citas textuales de clientes en este período:**")
-                    # Mostrar hasta 3 citas reales del período filtrado
                     sample_reviews = sub_df[sub_df["texto"].str.len() > 30].head(3)
                     if len(sample_reviews) > 0:
                         for _, r in sample_reviews.iterrows():
@@ -393,7 +397,6 @@ elif menu == "Top Motivos de Queja":
                     st.metric("Promedio de Estrellas", f"{avg_stars:.2f} / 5.0")
                     st.metric("Tasa de Respuesta", f"{resp_rate:.1f}%")
 
-        # Pestaña de Matriz Comparativa
         with tabs[-1]:
             st.subheader(f"Matriz Comparativa de Categorías ({rango_anios[0]} - {rango_anios[1]})")
             resumen_df = []
