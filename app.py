@@ -22,20 +22,25 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_CATEGORIZADAS = os.path.join(BASE_DIR, "resenas_categorizadas.csv")
 CSV_ORIGINAL = os.path.join(BASE_DIR, "resenas_emporio_terciado_3_o_menos.csv")
 
-# Paleta Okabe-Ito con alto contraste de luminancia y diferenciación para deuteranopia/protanopia
-COLOR_1_STAR = "#0072B2"  # Azul profundo
-COLOR_2_STAR = "#E69F00"  # Naranja / Ámbar de alta luminancia
-COLOR_3_STAR = "#009E73"  # Verde azulado
+# Paleta con jerarquía de contraste visual (alto contraste para lo crítico, bajo contraste para lo secundario)
+COLOR_1_STAR = "#0072B2"  # Alto contraste (Azul profundo dominante)
+COLOR_2_STAR = "#E69F00"  # Contraste medio (Ámbar / Naranja cálido)
+COLOR_3_STAR = "#94A3B8"  # Bajo contraste (Gris azulado suave / neutro)
 
-OKABE_ITO_PALETTE = [
-    "#0072B2",  # Azul
-    "#E69F00",  # Naranja
-    "#009E73",  # Verde azulado
-    "#CC79A7",  # Púrpura rojizo
-    "#56B4E9",  # Celeste cielo
-    "#D55E00",  # Bermellón
-    "#718096"   # Gris neutro
+# Jerarquía para barras de categorías: Top destacados vs secundarios atenuados
+HIERARCHY_PALETTE = [
+    "#0072B2",  # Top 1: Máximo contraste / impacto visual
+    "#E69F00",  # Top 2: Contraste medio-alto
+    "#009E73",  # Top 3: Contraste medio
+    "#64748B",  # Top 4: Contraste medio-bajo
+    "#94A3B8",  # Top 5: Bajo contraste
+    "#CBD5E1",  # Top 6: Muy bajo contraste
+    "#E2E8F0"   # Top 7+: Atenuado
 ]
+
+# Símbolos y estilos de línea accesibles para doble codificación (redundant encoding)
+ACCESSIBLE_SYMBOLS = ["circle", "square", "triangle-up", "diamond", "cross", "x"]
+ACCESSIBLE_DASHES = ["solid", "dash", "dot", "dashdot", "longdash"]
 
 # Custom CSS
 st.markdown("""
@@ -235,7 +240,8 @@ if menu == "Resumen Ejecutivo":
             cat_data.columns = ["Categoría", "Cantidad"]
             cat_data["Porcentaje"] = (cat_data["Cantidad"] / len(df_filtrado_texto) * 100).round(1)
             
-            # Gráfico de barras ordenado de mayor a menor (mayor arriba)
+            bar_colors = [HIERARCHY_PALETTE[min(i, len(HIERARCHY_PALETTE)-1)] for i in range(len(cat_data))]
+            
             fig = px.bar(
                 cat_data,
                 x="Cantidad",
@@ -243,7 +249,7 @@ if menu == "Resumen Ejecutivo":
                 orientation="h",
                 text=cat_data.apply(lambda r: f"{r['Cantidad']} ({r['Porcentaje']}%)", axis=1),
                 color="Categoría",
-                color_discrete_sequence=OKABE_ITO_PALETTE,
+                color_discrete_sequence=bar_colors,
             )
             fig.update_layout(
                 yaxis={'categoryorder': 'total ascending'},
@@ -326,19 +332,27 @@ elif menu == "Evolución Temporal":
         sub_time = df_filtrado_texto[df_filtrado_texto["categoria_principal"].isin(top_cats)]
         cat_time = sub_time.groupby(["anio_estimado", "categoria_principal"]).size().reset_index(name="quejas")
         
+        # Doble codificación accesible: Color + Forma de marcador (círculo, cuadrado, triángulo, rombo) + Estilo de línea (sólida, guiones, puntos)
         fig_cat_time = px.line(
             cat_time,
             x="anio_estimado",
             y="quejas",
             color="categoria_principal",
-            color_discrete_sequence=OKABE_ITO_PALETTE,
-            markers=True,
+            symbol="categoria_principal",
+            line_dash="categoria_principal",
+            color_discrete_sequence=HIERARCHY_PALETTE,
+            symbol_sequence=ACCESSIBLE_SYMBOLS,
+            line_dash_sequence=ACCESSIBLE_DASHES,
             labels={"anio_estimado": "Año", "quejas": "Cantidad de Quejas", "categoria_principal": "Motivo"},
             title="Tendencia Anual por Categoría de Queja"
         )
+        fig_cat_time.update_traces(
+            marker=dict(size=9, line=dict(width=1, color="#FFFFFF")),
+            line=dict(width=2.5)
+        )
         fig_cat_time.update_layout(
             xaxis=dict(tickmode="linear", dtick=1),
-            height=380,
+            height=400,
             margin=dict(l=10, r=10, t=40, b=10)
         )
         st.plotly_chart(fig_cat_time, use_container_width=True)
