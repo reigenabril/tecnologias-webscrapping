@@ -54,13 +54,13 @@ st.markdown("""
         font-weight: 500;
     }
     .quote-box {
-        background-color: #FEF2F2;
-        border-left: 4px solid #EF4444;
+        background-color: #FFF7ED;
+        border-left: 4px solid #D55E00;
         padding: 0.8rem 1.2rem;
         margin: 0.8rem 0;
         border-radius: 4px;
         font-style: italic;
-        color: #7F1D1D;
+        color: #7C2D12;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -228,7 +228,7 @@ if menu == "Resumen Ejecutivo":
                 orientation="h",
                 text=cat_data.apply(lambda r: f"{r['Cantidad']} ({r['Porcentaje']}%)", axis=1),
                 color="Cantidad",
-                color_continuous_scale=["#3B82F6", "#EF4444"],
+                color_continuous_scale=["#56B4E9", "#D55E00"],
             )
             fig.update_layout(
                 yaxis=dict(autorange="reversed"),
@@ -256,7 +256,7 @@ if menu == "Resumen Ejecutivo":
                 values="Cantidad",
                 hole=0.45,
                 color="Estrellas",
-                color_discrete_map={1: "#EF4444", 2: "#F97316", 3: "#FBBF24"}
+                color_discrete_map={1: "#D55E00", 2: "#E69F00", 3: "#56B4E9"}
             )
             fig_pie.update_layout(height=380, margin=dict(l=10, r=10, t=10, b=10))
             st.plotly_chart(fig_pie, use_container_width=True)
@@ -295,7 +295,7 @@ elif menu == "Evolución Temporal":
         color="estrellas_str",
         title=f"Volumen Anual de Reseñas ({rango_anios[0]} - {rango_anios[1]})",
         labels={"anio_estimado": "Año", "cantidad": "Cantidad de Reseñas", "estrellas_str": "Calificación"},
-        color_discrete_map={"1 Estrella": "#EF4444", "2 Estrellas": "#F97316", "3 Estrellas": "#FBBF24"},
+        color_discrete_map={"1 Estrella": "#D55E00", "2 Estrellas": "#E69F00", "3 Estrellas": "#56B4E9"},
         barmode="stack"
     )
     fig_evol.update_layout(
@@ -316,6 +316,7 @@ elif menu == "Evolución Temporal":
             x="anio_estimado",
             y="quejas",
             color="categoria_principal",
+            color_discrete_sequence=["#D55E00", "#0072B2", "#009E73", "#E69F00", "#CC79A7", "#56B4E9"],
             markers=True,
             labels={"anio_estimado": "Año", "quejas": "Cantidad de Quejas", "categoria_principal": "Motivo"},
             title="Tendencia Anual por Categoría de Queja"
@@ -448,7 +449,7 @@ elif menu == "Explorador de Reseñas":
                 
             if pd.notna(row['respuesta_dueno']) and row['respuesta_dueno'].strip():
                 st.markdown(f"""
-                <div style="background-color: #F0FDF4; border-left: 4px solid #22C55E; padding: 0.6rem 1rem; border-radius: 4px; margin-top: 0.5rem;">
+                <div style="background-color: #F0FDF4; border-left: 4px solid #009E73; padding: 0.6rem 1rem; border-radius: 4px; margin-top: 0.5rem;">
                     <b>Respuesta oficial:</b><br>{row['respuesta_dueno']}
                 </div>
                 """, unsafe_allow_html=True)

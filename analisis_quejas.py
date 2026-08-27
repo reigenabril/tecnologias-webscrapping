@@ -127,7 +127,8 @@ def main():
     sns.set_theme(style="whitegrid")
     fig, ax = plt.subplots(figsize=(11, 6))
     
-    colors = ["#D32F2F", "#E65100", "#F57C00", "#1976D2", "#0288D1", "#7B1FA2", "#757575"]
+    # Paleta Okabe-Ito (colorblind-safe)
+    colors = ["#D55E00", "#E69F00", "#0072B2", "#56B4E9", "#009E73", "#CC79A7", "#757575"]
     
     y_data = cat_counts.index
     x_data = cat_counts.values
