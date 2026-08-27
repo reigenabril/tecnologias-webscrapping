@@ -82,6 +82,22 @@ st.markdown("""
         font-style: italic;
         color: #1E293B;
     }
+    .foda-card {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .foda-f { border-top: 4px solid #009E73; }
+    .foda-o { border-top: 4px solid #0072B2; }
+    .foda-d { border-top: 4px solid #D55E00; }
+    .foda-a { border-top: 4px solid #E69F00; }
+    .foda-badge-f { background-color: #E6F4EA; color: #137333; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
+    .foda-badge-o { background-color: #E8F0FE; color: #1A73E8; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
+    .foda-badge-d { background-color: #FCE8E6; color: #C5221F; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
+    .foda-badge-a { background-color: #FEF7E0; color: #B06000; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -134,6 +150,7 @@ menu = st.sidebar.radio(
         "Evolución Temporal",
         "Top Motivos de Queja",
         "Explorador de Reseñas",
+        "Matriz FODA",
         "Recomendaciones de Gestión"
     ]
 )
@@ -493,7 +510,194 @@ elif menu == "Explorador de Reseñas":
 
 
 # ==========================================
-# 5. RECOMENDACIONES DE GESTIÓN
+# 5. MATRIZ FODA ESTRATÉGICA
+# ==========================================
+elif menu == "Matriz FODA":
+    st.markdown('<div class="main-header">Matriz FODA y Diagnóstico Estratégico</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Cruce analítico entre la <b>identidad institucional declarada</b> y los <b>puntos de dolor empíricos</b> de los clientes</div>', unsafe_allow_html=True)
+
+    # Métricas destacadas del cruce
+    m1, m2, m3, m4 = st.columns(4)
+    with m1:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-value">1962</div>
+            <div class="metric-label">Fundación (+60 Años de Trayectoria)</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with m2:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-value">+20 Años</div>
+            <div class="metric-label">Liderazgo en Construcción en Seco</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with m3:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-value" style="color: #D55E00;">56.0%</div>
+            <div class="metric-label">Quejas por Trato y Atención</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with m4:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-value" style="color: #0072B2;">26.0%</div>
+            <div class="metric-label">Fricción en Esperas y Canales</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    tab_foda, tab_cruces, tab_gap = st.tabs([
+        "Matriz Cuadrante FODA",
+        "Estrategias y Cruces (FO, DO, FA, DA)",
+        "Diagnóstico de Brecha (Discurso vs. Realidad)"
+    ])
+
+    with tab_foda:
+        col_izq, col_der = st.columns(2)
+
+        with col_izq:
+            st.markdown("""
+            <div class="foda-card foda-f">
+                <div class="foda-title" style="color: #009E73;">
+                    <span>🛡️ FORTALEZAS (Internas)</span>
+                    <span class="foda-badge-f">Capacidades Clave</span>
+                </div>
+                <ul>
+                    <li><b>Trayectoria y liderazgo consolidado:</b> Más de 60 años en el mercado (fundada en 1962), referente indiscutido en La Plata y alcance de distribución nacional.</li>
+                    <li><b>Amplitud de catálogo y primeras marcas:</b> Especialización en placas aglomeradas, MDF melamínicos, terciados y más de 20 años liderando distribución de construcción en seco bajo norma.</li>
+                    <li><b>Tecnología y servicios de valor agregado:</b> Sistema computarizado con optimizador de corte, pegado de cantos, fresados y mecanizados a medida.</li>
+                    <li><b>Línea de productos propia:</b> Impulso de su marca <i>Area Base</i>.</li>
+                    <li><b>Políticas formales de calidad:</b> Compromiso explícito de la dirección con sistemas de calidad total, reinversión de ganancias y relación sólida con proveedores.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("""
+            <div class="foda-card foda-d">
+                <div class="foda-title" style="color: #D55E00;">
+                    <span>⚠️ DEBILIDADES (Internas)</span>
+                    <span class="foda-badge-d">Puntos Críticos Detectados</span>
+                </div>
+                <ul>
+                    <li><b>Grave brecha en atención al cliente (56.0% de quejas):</b> Destrato, falta de predisposición y desidia en cajas y mostrador de ventas (inconsistencia con su política de "desarrollo humano").</li>
+                    <li><b>Cuellos de botella y demoras operativas (17.3% de quejas):</b> Circuitos burocráticos con filas sucesivas (mostrador &rarr; caja &rarr; despacho / taller).</li>
+                    <li><b>Colapso de canales remotos (8.7% de quejas):</b> Teléfonos sin respuesta, llamadas cortadas y demoras prolongadas para cotizaciones por WhatsApp.</li>
+                    <li><b>Fricciones en el servicio de taller:</b> Horarios acotados de corte, desajustes en plazos de entrega y errores dimensionales.</li>
+                    <li><b>Gestión reactiva de reputación digital:</b> Casi el 70% de las reseñas de 1 a 3 estrellas carecen de respuesta institucional o seguimiento.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col_der:
+            st.markdown("""
+            <div class="foda-card foda-o">
+                <div class="foda-title" style="color: #0072B2;">
+                    <span>🚀 OPORTUNIDADES (Externas)</span>
+                    <span class="foda-badge-o">Potencial de Crecimiento</span>
+                </div>
+                <ul>
+                    <li><b>Auge del diseño de interiores y construcción en seco:</b> Creciente demanda de arquitectos, carpinteros, diseñadores y público <i>Do-It-Yourself</i>.</li>
+                    <li><b>Digitalización y autogestión:</b> Incorporación de cotizadores online de placas y cortes con stock en tiempo real, agilizando el flujo previo al local.</li>
+                    <li><b>Fidelización B2B especializada:</b> Creación de canales preferenciales y programas de beneficios para gremios, instaladores y constructoras.</li>
+                    <li><b>Automatización omnicanal:</b> Implementación de chatbots en WhatsApp para consultas de catálogo, horarios y estado de pedidos.</li>
+                    <li><b>Capacitación técnica abierta:</b> Posicionamiento como polo formador en sistemas constructivos modernos en la región.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("""
+            <div class="foda-card foda-a">
+                <div class="foda-title" style="color: #E69F00;">
+                    <span>⚡ AMENAZAS (Externas)</span>
+                    <span class="foda-badge-a">Riesgos del Entorno</span>
+                </div>
+                <ul>
+                    <li><b>Fuga de clientes a competidores ágiles:</b> Madereras locales y grandes cadenas (Easy, Sodimac) con procesos de cobro y despacho más dinámicos.</li>
+                    <li><b>Deterioro de reputación de marca:</b> Reseñas públicas negativas en Google Maps y redes sociales que disuaden a potenciales compradores.</li>
+                    <li><b>Volatilidad macroeconómica y de precios:</b> Inflación y disparidad de precios que generan fricción al cotizar o facturar.</li>
+                    <li><b>Creciente exigencia de inmediatez:</b> Clientes que penalizan la espera física y la falta de respuesta inmediata en canales digitales.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
+    with tab_cruces:
+        st.subheader("Matriz de Cruces Estratégicos")
+        c_fo, c_do = st.columns(2)
+        with c_fo:
+            st.markdown("""
+            #### 🌟 Estrategias FO (Maxi - Maxi)
+            *Apalancar Fortalezas para capturar Oportunidades:*
+            * **Plataforma Integral de Servicios Digitales:** Utilizar el optimizador de corte computarizado y el amplio catálogo para lanzar un cotizador web con turnero para carpinteros y arquitectos.
+            * **Alianzas B2B con Constructoras:** Aprovechar los 20 años de liderazgo en construcción en seco para ofrecer paquetes integrales de abastecimiento y capacitación técnica.
+            """)
+
+            st.markdown("""
+            #### 🛡️ Estrategias FA (Maxi - Mini)
+            *Apalancar Fortalezas para mitigar Amenazas:*
+            * **Fidelización y Blindaje de Cartera:** Respaldarse en los más de 60 años de trayectoria y relación con proveedores de primeras marcas para garantizar precios competitivos y disponibilidad frente a grandes cadenas.
+            * **Diferenciación por Asesoramiento Especializado:** Ofrecer servicio técnico de vanguardia en taller y mecanizados que los competidores genéricos no pueden igualar.
+            """)
+
+        with c_do:
+            st.markdown("""
+            #### 🔄 Estrategias DO (Mini - Maxi)
+            *Superar Debilidades aprovechando Oportunidades:*
+            * **Automatización y Canal WhatsApp Inteligente:** Integrar un chatbot para cotizaciones frecuentes y consultas de stock, liberando a los vendedores para que atiendan con calidez en el salón.
+            * **Reingeniería de Procesos de Compra:** Unificar asesoramiento, cobro y despacho mediante turnero digital para eliminar filas y demoras.
+            """)
+
+            st.markdown("""
+            #### 🚨 Estrategias DA (Mini - Mini)
+            *Minimizar Debilidades y neutralizar Amenazas:*
+            * **Plan de Choque en Cultura de Servicio:** Capacitación obligatoria al personal de cajas y ventas en habilidades blandas, empatía y resolución de objeciones para frenar la pérdida de clientes.
+            * **Protocolo de Reputación Online:** Responder al 100% de las quejas en Google Maps en menos de 48 hs con soluciones concretas y contacto directo de gerencia.
+            """)
+
+    with tab_gap:
+        st.subheader("Diagnóstico de la Brecha: Discurso Institucional vs. Experiencia Real")
+        st.markdown("Comparativa entre los compromisos formalmente declarados por la empresa y la evidencia empírica relevada en la auditoría de clientes:")
+
+        gap_data = [
+            {
+                "Pilar Evaluado": "1. Factor Humano y Trato al Cliente",
+                "Postura Institucional Declarada": "Desarrollo permanente del factor humano, capacitación constante, búsqueda de la excelencia y satisfacción total.",
+                "Realidad Empírica (Reseñas)": "56.0% de quejas por maltrato, desidia, mala predisposición en cajas y atención de mala gana.",
+                "Nivel de Brecha": "🔴 Crítica (Urgente)"
+            },
+            {
+                "Pilar Evaluado": "2. Eficiencia y Tiempos de Espera",
+                "Postura Institucional Declarada": "Optimización continua de procesos, sistemas ágiles y servicio integral oportuno.",
+                "Realidad Empírica (Reseñas)": "17.3% de quejas por demoras excesivas, circuitos burocráticos con 3 filas consecutivas para una sola compra.",
+                "Nivel de Brecha": "🟠 Alta (Prioritaria)"
+            },
+            {
+                "Pilar Evaluado": "3. Canales de Contacto Remoto",
+                "Postura Institucional Declarada": "Interacción fluida con clientes y soluciones integrales de asesoramiento.",
+                "Realidad Empírica (Reseñas)": "8.7% de quejas por teléfonos desatendidos, llamadas colgadas y presupuestos de WhatsApp demorados por días.",
+                "Nivel de Brecha": "🟠 Alta (Prioritaria)"
+            },
+            {
+                "Pilar Evaluado": "4. Taller de Cortes y Dimensionado",
+                "Postura Institucional Declarada": "Sistema computarizado de optimización de cortes, mecanizado de vanguardia y máxima precisión.",
+                "Realidad Empírica (Reseñas)": "Reclamos puntuales por horarios restrictivos para cortar y demoras en la preparación de pedidos.",
+                "Nivel de Brecha": "🟡 Media (Mejora Continua)"
+            },
+            {
+                "Pilar Evaluado": "5. Gestión de Calidad y Reputación",
+                "Postura Institucional Declarada": "Sistema de gestión de calidad total, indicadores a procesos críticos y fidelización activa.",
+                "Realidad Empírica (Reseñas)": "Casi 70% de las quejas públicas no tienen respuesta oficial, evidenciando gestión reactiva.",
+                "Nivel de Brecha": "🟠 Alta (Prioritaria)"
+            }
+        ]
+
+        st.dataframe(pd.DataFrame(gap_data), use_container_width=True, hide_index=True)
+
+
+# ==========================================
+# 6. RECOMENDACIONES DE GESTIÓN
 # ==========================================
 elif menu == "Recomendaciones de Gestión":
     st.markdown('<div class="main-header">Propuestas de Mejora y Acción de Gestión</div>', unsafe_allow_html=True)
