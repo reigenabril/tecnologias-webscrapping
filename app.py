@@ -355,14 +355,6 @@ if menu == "1. Presentación & Diagnóstico Digital":
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.subheader("4. Valor Estratégico del Sistema de Explotación de Información (Laudon & Laudon)")
-    st.markdown("""
-    En el marco conceptual de los **Sistemas de Información Gerencial (DSS / BI)**, esta aplicación en Streamlit permite:
-    1. **Captura y Minería de Datos No Estructurados:** Transforma texto libre de reseñas públicas en métricas categorizadas mediante NLP.
-    2. **Intimidad con el Cliente (*Customer Intimacy*):** Diagnostica objetivamente la voz del cliente sin sesgos internos de percepción.
-    3. **Toma de Decisiones Mejorada:** Brinda respaldo cuantitativo a la gerencia para priorizar las inversiones de las fases de ERP y CRM.
-    """)
 
 
 # ==============================================================================
