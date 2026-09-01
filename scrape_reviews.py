@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Scraper de Reseñas de Google Maps para "El Emporio del Terciado S.A."
-Extrae el 100% de las reseñas de 1, 2 y 3 estrellas utilizando Playwright con Google Chrome.
+Extrae el 100% de las reseñas (1 a 5 estrellas) utilizando Playwright con Google Chrome.
 """
 
 import os
@@ -14,7 +14,7 @@ from typing import Dict, List
 from playwright.sync_api import sync_playwright
 
 MAPS_URL = "https://www.google.com/maps/place/El+Emporio+del+Terciado+S.A./@-34.9105382,-57.9682882,17z/data=!4m8!3m7!1s0x95a2e7b4461a4efb:0x7afddf40c8abb97a!8m2!3d-34.9105382!4d-57.9657079!9m1!1b1!16s%2Fg%2F1tm2bvyw?hl=es"
-DEFAULT_OUTPUT_CSV = "resenas_emporio_terciado_3_o_menos.csv"
+DEFAULT_OUTPUT_CSV = "resenas_emporio_terciado_todas.csv"
 PROFILE_DIR = os.path.expanduser("~/.gmaps_chrome_session")
 
 
@@ -35,7 +35,13 @@ def expand_all_more(page):
             pass
 
 
-def extract_cards_from_dom(page, extracted_dict: Dict[str, Dict[str, str]], fallback_star: int = 0, max_stars: int = 3):
+def extract_cards_from_dom(
+    page,
+    extracted_dict: Dict[str, Dict[str, str]],
+    fallback_star: int = 0,
+    min_stars: int = 1,
+    max_stars: int = 5
+):
     """Extrae las tarjetas del DOM actual y las agrega al diccionario deduplicado."""
     expand_all_more(page)
     cards = page.query_selector_all("div.jftiEf, div[data-review-id]")
@@ -70,7 +76,7 @@ def extract_cards_from_dom(page, extracted_dict: Dict[str, Dict[str, str]], fall
             
         key = review_id if review_id else f"{author}_{date_text}_{stars}"
         
-        if key not in extracted_dict and 0 < stars <= max_stars:
+        if key not in extracted_dict and min_stars <= stars <= max_stars:
             extracted_dict[key] = {
                 "id_resena": key,
                 "autor": author,
@@ -114,11 +120,34 @@ def scroll_current_view(page, max_scrolls: int = 50):
             prev_cnt = cnt
 
 
-def run_scraper(output_file: str = DEFAULT_OUTPUT_CSV, max_stars: int = 3):
+def select_sort_option(page, keyword: str) -> bool:
+    """Abre el menú de ordenamiento y selecciona la opción deseada."""
+    sort_btn = page.locator("button[aria-label='Ordenar reseñas'], button[aria-label='Ordenar opiniones']").first
+    if sort_btn.is_visible():
+        try:
+            sort_btn.click()
+            page.wait_for_timeout(1200)
+            opt = page.locator(f"div[role='menuitemradio']:has-text('{keyword}'), div[role='menuitem']:has-text('{keyword}')").first
+            if opt.is_visible():
+                opt.click()
+                page.wait_for_timeout(3000)
+                return True
+        except Exception as e:
+            print(f"[!] Aviso al ordenar por '{keyword}': {e}")
+    return False
+
+
+def run_scraper(url: str = MAPS_URL, output_file: str = DEFAULT_OUTPUT_CSV, min_stars: int = 1, max_stars: int = 5):
+    # Asegurar idioma español en Maps
+    if "hl=es" not in url:
+        sep = "&" if "?" in url else "?"
+        url = f"{url}{sep}hl=es"
+
     print("=" * 75)
-    print("  SCRAPER DE RESEÑAS DE GOOGLE MAPS - EL EMPORIO DEL TERCIADO S.A.")
+    print("  SCRAPER DE RESEÑAS DE GOOGLE MAPS")
     print("=" * 75)
-    print(f"[-] Calificación máxima: <= {max_stars} estrellas")
+    print(f"[-] URL: {url}")
+    print(f"[-] Rango de calificación: {min_stars} a {max_stars} estrella(s)")
     print(f"[-] Archivo de salida: {output_file}")
     print(f"[-] Perfil de navegador: {PROFILE_DIR}\n")
     
@@ -144,7 +173,7 @@ def run_scraper(output_file: str = DEFAULT_OUTPUT_CSV, max_stars: int = 3):
             page = context.pages[0] if context.pages else context.new_page()
             
             print("[*] Cargando ubicación en Google Maps...")
-            page.goto(MAPS_URL, wait_until="domcontentloaded", timeout=60000)
+            page.goto(url, wait_until="domcontentloaded", timeout=60000)
             page.wait_for_timeout(4000)
             
             # Pestaña Reseñas
@@ -155,51 +184,43 @@ def run_scraper(output_file: str = DEFAULT_OUTPUT_CSV, max_stars: int = 3):
                     page.wait_for_timeout(3000)
                     break
                     
-            # Paso 1: Ordenar por más baja
-            sort_btn = page.locator("button[aria-label='Ordenar reseñas']").first
-            if sort_btn.is_visible():
-                print("[+] Paso 1: Ordenando por 'Valoración más baja'...")
-                sort_btn.click()
-                page.wait_for_timeout(1200)
-                lowest_opt = page.locator("div[role='menuitemradio']:has-text('más baja'), div[role='menuitem']:has-text('más baja')").first
-                if lowest_opt.is_visible():
-                    lowest_opt.click()
-                    page.wait_for_timeout(3000)
-                    
+            # Paso 1: Ordenar por más recientes
+            print("[+] Paso 1: Ordenando por 'Más recientes'...")
+            select_sort_option(page, "más recientes")
             scroll_current_view(page, max_scrolls=70)
-            extract_cards_from_dom(page, all_reviews, max_stars=max_stars)
+            extract_cards_from_dom(page, all_reviews, min_stars=min_stars, max_stars=max_stars)
             print(f"[+] Reseñas acumuladas tras Paso 1: {len(all_reviews)}")
-            
-            # Paso 2: Ordenar por más recientes
-            if sort_btn.is_visible():
-                print("[+] Paso 2: Ordenando por 'Más recientes'...")
-                sort_btn.click()
-                page.wait_for_timeout(1200)
-                recent_opt = page.locator("div[role='menuitemradio']:has-text('más recientes'), div[role='menuitem']:has-text('Más recientes')").first
-                if recent_opt.is_visible():
-                    recent_opt.click()
-                    page.wait_for_timeout(3000)
-                    
-            scroll_current_view(page, max_scrolls=60)
-            extract_cards_from_dom(page, all_reviews, max_stars=max_stars)
+
+            # Paso 2: Ordenar por valoración más alta
+            print("[+] Paso 2: Ordenando por 'Valoración más alta'...")
+            select_sort_option(page, "más alta")
+            scroll_current_view(page, max_scrolls=70)
+            extract_cards_from_dom(page, all_reviews, min_stars=min_stars, max_stars=max_stars)
             print(f"[+] Reseñas acumuladas tras Paso 2: {len(all_reviews)}")
 
-            # Paso 3: Filtro por barras de histograma (1, 2 y 3 estrellas)
-            for star in range(1, max_stars + 1):
-                print(f"[+] Paso 3.{star}: Filtrando por {star} estrella(s)...")
+            # Paso 3: Ordenar por valoración más baja
+            print("[+] Paso 3: Ordenando por 'Valoración más baja'...")
+            select_sort_option(page, "más baja")
+            scroll_current_view(page, max_scrolls=70)
+            extract_cards_from_dom(page, all_reviews, min_stars=min_stars, max_stars=max_stars)
+            print(f"[+] Reseñas acumuladas tras Paso 3: {len(all_reviews)}")
+
+            # Paso 4: Filtro por barras de histograma (1 a 5 estrellas)
+            for star in range(min_stars, max_stars + 1):
+                print(f"[+] Paso 4.{star}: Filtrando por {star} estrella(s)...")
                 row = page.locator(f"tr[aria-label*='{star} estrellas'], tr[aria-label*='{star} estrella']").first
                 if row.is_visible():
                     row.click()
                     page.wait_for_timeout(3000)
-                    scroll_current_view(page, max_scrolls=40)
-                    extract_cards_from_dom(page, all_reviews, fallback_star=star, max_stars=max_stars)
+                    scroll_current_view(page, max_scrolls=50)
+                    extract_cards_from_dom(page, all_reviews, fallback_star=star, min_stars=min_stars, max_stars=max_stars)
                     print(f"[+] Reseñas acumuladas tras filtro de {star} estrella(s): {len(all_reviews)}")
                     
             browser.close()
     finally:
         proc.terminate()
         
-    filtered = [r for r in all_reviews.values() if int(r["estrellas"]) <= max_stars and int(r["estrellas"]) > 0]
+    filtered = [r for r in all_reviews.values() if min_stars <= int(r["estrellas"]) <= max_stars]
     filtered.sort(key=lambda x: (int(x["estrellas"]), x["fecha"]))
     
     fields = ["id_resena", "autor", "estrellas", "fecha", "texto", "respuesta_dueno"]
@@ -211,7 +232,7 @@ def run_scraper(output_file: str = DEFAULT_OUTPUT_CSV, max_stars: int = 3):
     print("\n" + "=" * 75)
     print(f" RESUMEN FINAL:")
     print(f" [+] Archivo CSV guardado en: {output_file}")
-    print(f" [+] Total de reseñas extraídas (<= {max_stars} estrellas): {len(filtered)}")
+    print(f" [+] Total de reseñas extraídas ({min_stars} a {max_stars} estrellas): {len(filtered)}")
     
     dist = {}
     with_resp = 0
@@ -224,7 +245,7 @@ def run_scraper(output_file: str = DEFAULT_OUTPUT_CSV, max_stars: int = 3):
         if r["texto"]:
             with_txt += 1
             
-    for s in range(1, max_stars + 1):
+    for s in range(min_stars, max_stars + 1):
         print(f" [+] {s} estrella(s): {dist.get(str(s), 0)}")
     print(f" [+] Reseñas con texto escrito: {with_txt}")
     print(f" [+] Reseñas con respuesta del comercio: {with_resp}")
@@ -233,8 +254,10 @@ def run_scraper(output_file: str = DEFAULT_OUTPUT_CSV, max_stars: int = 3):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scraper de reseñas de Google Maps")
-    parser.add_argument("--output", type=str, default=DEFAULT_OUTPUT_CSV, help="Ruta del archivo CSV")
-    parser.add_argument("--max-stars", type=int, default=3, help="Calificación máxima a extraer (default: 3)")
+    parser.add_argument("--url", type=str, default=MAPS_URL, help="URL de la sucursal en Google Maps")
+    parser.add_argument("--output", type=str, default=DEFAULT_OUTPUT_CSV, help="Ruta del archivo CSV de salida")
+    parser.add_argument("--min-stars", type=int, default=1, help="Calificación mínima a extraer (default: 1)")
+    parser.add_argument("--max-stars", type=int, default=5, help="Calificación máxima a extraer (default: 5)")
     args = parser.parse_args()
     
-    run_scraper(output_file=args.output, max_stars=args.max_stars)
+    run_scraper(url=args.url, output_file=args.output, min_stars=args.min_stars, max_stars=args.max_stars)
