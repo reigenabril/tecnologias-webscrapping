@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Dashboard Interactivo en Streamlit: Análisis de Puntos de Dolor y Experiencia del Cliente
-Materia: Tecnologías para la Gestión
+Dashboard Interactivo en Streamlit: Diagnóstico Digital y Análisis Estratégico (Entrega 1)
+Materia: Tecnologías para la Gestión (FCE - UNLP)
+Caso de Estudio: El Emporio del Terciado S.A.
 """
 
 import os
@@ -12,33 +13,32 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 st.set_page_config(
-    page_title="Análisis de Puntos de Dolor - Tecnologías para la Gestión",
+    page_title="Entrega 1: Diagnóstico Digital - El Emporio del Terciado",
+    page_icon="🪵",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Rutas dinámicas compatibles con ejecución local y despliegue en Streamlit Cloud
+# Rutas dinámicas
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_CATEGORIZADAS = os.path.join(BASE_DIR, "resenas_categorizadas.csv")
 CSV_ORIGINAL = os.path.join(BASE_DIR, "resenas_emporio_terciado_3_o_menos.csv")
 
-# Paleta con jerarquía de contraste visual (alto contraste para lo crítico, bajo contraste para lo secundario)
-COLOR_1_STAR = "#0072B2"  # Alto contraste (Azul profundo dominante)
-COLOR_2_STAR = "#E69F00"  # Contraste medio (Ámbar / Naranja cálido)
-COLOR_3_STAR = "#94A3B8"  # Bajo contraste (Gris azulado suave / neutro)
+# Paleta accesible Okabe-Ito y jerarquía visual
+COLOR_1_STAR = "#0072B2"  # Azul profundo
+COLOR_2_STAR = "#E69F00"  # Ámbar / Naranja
+COLOR_3_STAR = "#94A3B8"  # Gris azulado neutro
 
-# Jerarquía para barras de categorías: Top destacados vs secundarios atenuados
 HIERARCHY_PALETTE = [
-    "#0072B2",  # Top 1: Máximo contraste / impacto visual
+    "#0072B2",  # Top 1: Máximo contraste
     "#E69F00",  # Top 2: Contraste medio-alto
-    "#009E73",  # Top 3: Contraste medio
-    "#64748B",  # Top 4: Contraste medio-bajo
-    "#94A3B8",  # Top 5: Bajo contraste
-    "#CBD5E1",  # Top 6: Muy bajo contraste
-    "#E2E8F0"   # Top 7+: Atenuado
+    "#009E73",  # Top 3: Verde azulado
+    "#64748B",  # Top 4: Pizarra
+    "#94A3B8",  # Top 5: Gris suave
+    "#CBD5E1",  # Top 6: Muy suave
+    "#E2E8F0"   # Top 7+: Neutro
 ]
 
-# Símbolos y estilos de línea accesibles para doble codificación (redundant encoding)
 ACCESSIBLE_SYMBOLS = ["circle", "square", "triangle-up", "diamond", "cross", "x"]
 ACCESSIBLE_DASHES = ["solid", "dash", "dot", "dashdot", "longdash"]
 
@@ -52,7 +52,7 @@ st.markdown("""
         margin-bottom: 0.2rem;
     }
     .sub-header {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         color: #64748B;
         margin-bottom: 1.5rem;
     }
@@ -60,16 +60,17 @@ st.markdown("""
         background-color: #F8FAFC;
         border: 1px solid #E2E8F0;
         border-radius: 10px;
-        padding: 1.2rem;
+        padding: 1.1rem;
         text-align: center;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
     .metric-value {
-        font-size: 1.9rem;
+        font-size: 1.85rem;
         font-weight: 700;
         color: #0F172A;
     }
     .metric-label {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         color: #64748B;
         font-weight: 500;
     }
@@ -81,6 +82,14 @@ st.markdown("""
         border-radius: 4px;
         font-style: italic;
         color: #1E293B;
+    }
+    .process-card {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+        border-left: 5px solid #0072B2;
     }
     .foda-card {
         background-color: #FFFFFF;
@@ -94,10 +103,15 @@ st.markdown("""
     .foda-o { border-top: 4px solid #0072B2; }
     .foda-d { border-top: 4px solid #D55E00; }
     .foda-a { border-top: 4px solid #E69F00; }
-    .foda-badge-f { background-color: #E6F4EA; color: #137333; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
-    .foda-badge-o { background-color: #E8F0FE; color: #1A73E8; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
-    .foda-badge-d { background-color: #FCE8E6; color: #C5221F; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
-    .foda-badge-a { background-color: #FEF7E0; color: #B06000; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
+    .badge-dato { background-color: #E6F4EA; color: #137333; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; border: 1px solid #CEEAD6; }
+    .badge-supuesto { background-color: #FEF7E0; color: #B06000; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; border: 1px solid #FEEFC3; }
+    .callout-box {
+        background-color: #F1F5F9;
+        border-left: 4px solid #475569;
+        padding: 1rem;
+        border-radius: 6px;
+        margin: 1rem 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -139,35 +153,34 @@ if df.empty:
 min_year = int(df["anio_estimado"].min())
 max_year = int(df["anio_estimado"].max())
 
-# Sidebar - Filtros Globales
-st.sidebar.title("Tecnologías para la Gestión")
-st.sidebar.caption("Análisis de Puntos de Dolor en Comercio Minorista")
+# Sidebar - Menú Narrativo tipo Historia
+st.sidebar.markdown("### 🎓 Tecnologías para la Gestión")
+st.sidebar.caption("Trabajo Práctico Integrador — FCE UNLP")
+st.sidebar.markdown("**Caso:** *El Emporio del Terciado S.A.*")
+st.sidebar.markdown("---")
 
 menu = st.sidebar.radio(
-    "Navegación:",
+    "Estructura de la Entrega 1:",
     [
-        "Resumen Ejecutivo",
-        "Evolución Temporal",
-        "Top Motivos de Queja",
-        "Explorador de Reseñas",
-        "Matriz FODA",
-        "Recomendaciones de Gestión"
+        "1. Presentación & Diagnóstico Digital",
+        "2. Evidencia Empírica (Scraping)",
+        "3. Mapeo de Procesos AS-IS",
+        "4. Matriz FODA Estratégica",
+        "5. Explorador de Reseñas (Voz del Cliente)",
+        "6. Hoja de Ruta & Supuestos Base"
     ]
 )
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("Filtro por Años")
+st.sidebar.subheader("⚙️ Filtros de Análisis")
 
 rango_anios = st.sidebar.slider(
-    "Selecciona el rango de años:",
+    "Período de análisis (Años):",
     min_value=min_year,
     max_value=max_year,
     value=(min_year, max_year),
     step=1
 )
-
-st.sidebar.markdown("---")
-st.sidebar.subheader("Filtros Adicionales")
 
 filtro_estrellas = st.sidebar.multiselect(
     "Calificación (Estrellas):",
@@ -183,11 +196,11 @@ filtro_categorias = st.sidebar.multiselect(
 )
 
 filtro_respuesta = st.sidebar.selectbox(
-    "Respuesta de la Empresa:",
+    "Respuesta Institucional:",
     ["Todas", "Solo con respuesta", "Sin respuesta"]
 )
 
-# Aplicar filtros a nivel global
+# Filtro global
 df_filtrado = df[
     (df["anio_estimado"] >= rango_anios[0]) &
     (df["anio_estimado"] <= rango_anios[1]) &
@@ -205,19 +218,167 @@ if filtro_categorias:
 df_filtrado_texto = df_filtrado[df_filtrado["texto"].notna() & (df_filtrado["texto"].str.strip() != "")]
 
 
-# ==========================================
-# 1. RESUMEN EJECUTIVO
-# ==========================================
-if menu == "Resumen Ejecutivo":
-    st.markdown('<div class="main-header">Auditoría de Experiencia del Cliente y Puntos de Dolor</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="sub-header">Estudio de Caso: Empresa de Materiales y Maderas | Período: <b>{rango_anios[0]} - {rango_anios[1]}</b></div>', unsafe_allow_html=True)
+# ==============================================================================
+# 1. PRESENTACIÓN & DIAGNÓSTICO DIGITAL
+# ==============================================================================
+if menu == "1. Presentación & Diagnóstico Digital":
+    st.markdown('<div class="main-header">Entrega 1: Diagnóstico Digital y Análisis Estratégico</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Auditoría Integral de Sistemas de Información, Procesos de Negocio y Madurez Digital</div>', unsafe_allow_html=True)
 
+    col_meta1, col_meta2, col_meta3 = st.columns(3)
+    with col_meta1:
+        st.markdown("**Organización Cliente:** El Emporio del Terciado S.A.")
+        st.markdown("**Ubicación:** La Plata, Prov. de Buenos Aires")
+    with col_meta2:
+        st.markdown("**Fundación:** 1962 (64 años de trayectoria)")
+        st.markdown("**Rubro:** Maderas, placas, herrajes y construcción en seco")
+    with col_meta3:
+        st.markdown("**Enfoque:** Consultoría en Transformación Digital")
+        st.markdown("**Marco Metodológico:** Laudon & Laudon (16ª Ed.)")
+
+    st.markdown("---")
+
+    st.subheader("1. Perfil Corporativo y Modelo de Negocio")
+    col_corp1, col_corp2 = st.columns([6, 4])
+    with col_corp1:
+        st.markdown("""
+        **El Emporio del Terciado S.A.** es una empresa comercializadora y distribuidora de maderas, placas aglomeradas y MDF melamínicos, fenólicos, herrajes e insumos para la construcción en seco (Durlock/Knauf).
+        
+        Fundada en **1962** en la ciudad de La Plata, cuenta con más de seis décadas de liderazgo en el abastecimiento para carpintería, arquitectura y construcción.
+        
+        **Segmentos de Demanda Atendidos:**
+        - **B2B (Mayorista e Industrial):** Constructoras, carpinterías y fabricantes de muebles con compras por volumen, cuentas corrientes y corte programado.
+        - **B2C (Minorista y Particular):** Propietarios, instaladores independientes y público general (*Do It Yourself*).
+        """)
+    with col_corp2:
+        st.markdown("""
+        <div class="callout-box" style="margin-top: 0;">
+            <b>Misión Organizacional:</b> Proveer a carpinteros, profesionales de la construcción y público en general una amplia variedad de maderas y placas de alta calidad, combinando asesoramiento técnico con servicios de corte computarizado de precisión.<br><br>
+            <b>Visión Estratégica:</b> Consolidarse como el referente digital e industrial de la madera y la construcción en seco en la región, integrando canales de autogestión online con excelencia operativa y logística.
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    st.subheader("2. Propuesta de Valor y Capacidades Operativas")
+    st.markdown("""
+    La principal ventaja competitiva de **El Emporio del Terciado S.A.** radica en la **integración vertical del servicio de dimensionado a medida**:
+    
+    * **Servicio Computarizado de Taller:** Maquinaria industrial de última generación para optimización de corte de placas, pegado de cantos en PVC/ABS, fresado y mecanizado.
+    * **Catálogo Integral de Construcción en Seco:** Distribuidor líder en perfiles estructurales, placas de yeso y aislantes térmicos y acústicos bajo normas de calidad.
+    * **Línea de Marca Propia (*Area Base*):** Desarrollo de productos propios para garantizar estándares de terminación y control directo de márgenes.
+    * **Capacidad de Escala y Logística:** Depósito central y flota propia para abastecimiento mayorista a nivel regional y nacional.
+    """)
+    
+    col_prop1, col_prop2 = st.columns([6, 4])
+    with col_prop1:
+        st.markdown("""
+        <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; padding: 1rem; border-radius: 8px;">
+            <b style="color: #0F172A;">Cobertura y Horarios de Atención:</b><br>
+            • Lunes a Viernes de 8:00 a 16:30 hs. | Sábados de 8:30 a 12:30 hs.<br>
+            • <b>Red de Sucursales en La Plata:</b> Casa Central (Calle 31), EGGER HAUS (Av. 44) y Sucursal Centenario.
+        </div>
+        """, unsafe_allow_html=True)
+    with col_prop2:
+        st.markdown("""
+        <div style="background-color: #F0FDF4; border: 1px solid #BBF7D0; padding: 1rem; border-radius: 8px;">
+            <b style="color: #166534;">Diferencial de Servicio:</b><br>
+            Corte computarizado con software optimizador para minimizar desperdicios de placa y entregar paquetes rotulados a medida.
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.subheader("3. Diagnóstico de Madurez Digital (Modelo de 6 Dimensiones)")
+    st.markdown("Evaluación cualitativa y cuantitativa del nivel de preparación digital de la organización:")
+
+    dim1, dim2, dim3 = st.columns(3)
+    with dim1:
+        st.markdown("""
+        <div class="foda-card" style="border-top: 4px solid #0072B2;">
+            <h4 style="color: #0072B2; margin-top:0;">1. Estrategia Digital</h4>
+            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Inicial / Reactivo</b></p>
+            <p style="font-size: 0.85rem;">• Visión tradicional sin plan integral de digitalización.<br>
+            • Inversiones en tecnología acotadas a maquinaria de taller sin hoja de ruta de software.<br>
+            • Falta de KPIs digitales para monitorear canales.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="foda-card" style="border-top: 4px solid #D55E00;">
+            <h4 style="color: #D55E00; margin-top:0;">4. Procesos</h4>
+            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Manual / Fragmentado</b></p>
+            <p style="font-size: 0.85rem;">• Circuito de venta en 3 filas sucesivas sin terminales mPOS.<br>
+            • Dependencia de papel físico (remitos/croquis) para conectar ventas con taller.<br>
+            • Gestión reactiva de compras y reposición.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with dim2:
+        st.markdown("""
+        <div class="foda-card" style="border-top: 4px solid #E69F00;">
+            <h4 style="color: #E69F00; margin-top:0;">2. Tecnología e Infraestructura</h4>
+            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Silos Aislados / On-Premise</b></p>
+            <p style="font-size: 0.85rem;">• POS y facturación local sin arquitectura Cloud.<br>
+            • Desconexión entre sistema de cobro, software de corte y stock de depósito.<br>
+            • Riesgo operativo por respaldos locales sin ciberseguridad avanzada.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="foda-card" style="border-top: 4px solid #009E73;">
+            <h4 style="color: #009E73; margin-top:0;">5. Personas y Cultura</h4>
+            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Tradicional / Sobrecargado</b></p>
+            <p style="font-size: 0.85rem;">• Empleados de salón saturados por tareas administrativas manuales.<br>
+            • Atención simultánea presencial y telefónica genera fricción en el trato (56% quejas).<br>
+            • Oportunidad de capacitación en servicio y herramientas digitales.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with dim3:
+        st.markdown("""
+        <div class="foda-card" style="border-top: 4px solid #64748B;">
+            <h4 style="color: #475569; margin-top:0;">3. Datos y Analítica</h4>
+            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Básico / No Integrado</b></p>
+            <p style="font-size: 0.85rem;">• Toma de decisiones basada en intuición y planillas Excel dispersas.<br>
+            • Desaprovechamiento de datos no estructurados (reseñas, consultas WhatsApp).<br>
+            • El presente prototipo demuestra el valor de incorporar BI / Analytics.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="foda-card" style="border-top: 4px solid #CC79A7;">
+            <h4 style="color: #CC79A7; margin-top:0;">6. Clientes y Canales</h4>
+            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Multicanal Desarticulado</b></p>
+            <p style="font-size: 0.85rem;">• WhatsApp y líneas fijas sin CRM, chatbots ni ticketing.<br>
+            • 0% de autogestión web: carpinteros no pueden cargar despieces online.<br>
+            • 68.3% de opiniones en Google Maps sin respuesta institucional.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.subheader("4. Valor Estratégico del Sistema de Explotación de Información (Laudon & Laudon)")
+    st.markdown("""
+    En el marco conceptual de los **Sistemas de Información Gerencial (DSS / BI)**, esta aplicación en Streamlit permite:
+    1. **Captura y Minería de Datos No Estructurados:** Transforma texto libre de reseñas públicas en métricas categorizadas mediante NLP.
+    2. **Intimidad con el Cliente (*Customer Intimacy*):** Diagnostica objetivamente la voz del cliente sin sesgos internos de percepción.
+    3. **Toma de Decisiones Mejorada:** Brinda respaldo cuantitativo a la gerencia para priorizar las inversiones de las fases de ERP y CRM.
+    """)
+
+
+# ==============================================================================
+# 2. EVIDENCIA EMPÍRICA (SCRAPING)
+# ==============================================================================
+elif menu == "2. Evidencia Empírica (Scraping)":
+    st.markdown('<div class="main-header">Evidencia Empírica: Auditoría de Reseñas de Google Maps</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="sub-header">Análisis cuantitativo de la voz del cliente | Período: <b>{rango_anios[0]} - {rango_anios[1]}</b> ({len(df_filtrado)} reseñas)</div>', unsafe_allow_html=True)
+
+    # Indicadores Clave
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-value">{len(df_filtrado)}</div>
-            <div class="metric-label">Reseñas Bajas ({rango_anios[0]}-{rango_anios[1]})</div>
+            <div class="metric-label">Reseñas Filtradas (≤ 3 Estrellas)</div>
         </div>
         """, unsafe_allow_html=True)
     with col2:
@@ -225,7 +386,7 @@ if menu == "Resumen Ejecutivo":
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-value">{len(df_filtrado_texto)} ({pct_texto:.1f}%)</div>
-            <div class="metric-label">Quejas con Detalle Escrito</div>
+            <div class="metric-label">Quejas con Comentario Escrito</div>
         </div>
         """, unsafe_allow_html=True)
     with col3:
@@ -233,7 +394,7 @@ if menu == "Resumen Ejecutivo":
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-value">{promedio:.2f} / 5.0</div>
-            <div class="metric-label">Promedio de Calificación</div>
+            <div class="metric-label">Promedio de Calificación Crítica</div>
         </div>
         """, unsafe_allow_html=True)
     with col4:
@@ -242,16 +403,15 @@ if menu == "Resumen Ejecutivo":
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-value">{respondidas} ({pct_resp:.1f}%)</div>
-            <div class="metric-label">Tasa de Respuesta Institucional</div>
+            <div class="metric-label">Tasa de Respuesta del Comercio</div>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     col_chart1, col_chart2 = st.columns([6, 4])
-    
     with col_chart1:
-        st.subheader("Top Motivos de Queja en el Período")
+        st.subheader("Distribución de Motivos de Queja (Categorización NLP)")
         if len(df_filtrado_texto) > 0:
             cat_data = df_filtrado_texto["categoria_principal"].value_counts().reset_index()
             cat_data.columns = ["Categoría", "Cantidad"]
@@ -270,7 +430,7 @@ if menu == "Resumen Ejecutivo":
             )
             fig.update_layout(
                 yaxis={'categoryorder': 'total ascending'},
-                xaxis_title="Cantidad de Reseñas",
+                xaxis_title="Cantidad de Quejas",
                 yaxis_title="",
                 showlegend=False,
                 height=380,
@@ -278,11 +438,9 @@ if menu == "Resumen Ejecutivo":
             )
             fig.update_traces(textposition="outside")
             st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.warning("No hay reseñas con texto para los filtros seleccionados.")
 
     with col_chart2:
-        st.subheader("Distribución por Calificación")
+        st.subheader("Severidad de Quejas (Estrellas)")
         if len(df_filtrado) > 0:
             star_counts = df_filtrado["estrellas"].value_counts().sort_index().reset_index()
             star_counts.columns = ["Estrellas", "Cantidad"]
@@ -300,29 +458,7 @@ if menu == "Resumen Ejecutivo":
             st.plotly_chart(fig_pie, use_container_width=True)
 
     st.markdown("---")
-    st.subheader(f"Diagnóstico Dinámico ({rango_anios[0]} - {rango_anios[1]})")
-    if len(df_filtrado_texto) > 0:
-        top_cats_summary = df_filtrado_texto["categoria_principal"].value_counts().head(3)
-        top_text_lines = []
-        for i, (cat_name, count) in enumerate(top_cats_summary.items(), 1):
-            pct = (count / len(df_filtrado_texto)) * 100
-            top_text_lines.append(f"{i}. **{cat_name}** ({pct:.1f}% - {count} quejas)")
-        
-        sum_pct = (top_cats_summary.sum() / len(df_filtrado_texto)) * 100
-        st.info(f"""
-        Para el período seleccionado (**{rango_anios[0]} - {rango_anios[1]}**), los principales motivos representan el **{sum_pct:.1f}%** de las quejas:
-        \n""" + "\n".join([f"- {line}" for line in top_text_lines]))
-    else:
-        st.info("No se encontraron suficientes datos para generar el diagnóstico en este rango de años.")
-
-
-# ==========================================
-# 2. EVOLUCIÓN TEMPORAL POR AÑOS
-# ==========================================
-elif menu == "Evolución Temporal":
-    st.markdown('<div class="main-header">Evolución Histórica de Quejas por Año</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Tendencia temporal de reseñas de baja calificación</div>', unsafe_allow_html=True)
-
+    st.subheader("Evolución Temporal de Puntos de Dolor")
     anios_df = df_filtrado.groupby(["anio_estimado", "estrellas"]).size().reset_index(name="cantidad")
     anios_df["estrellas_str"] = anios_df["estrellas"].apply(lambda s: f"{s} Estrella{'s' if s > 1 else ''}")
     
@@ -331,146 +467,241 @@ elif menu == "Evolución Temporal":
         x="anio_estimado",
         y="cantidad",
         color="estrellas_str",
-        title=f"Volumen Anual de Reseñas ({rango_anios[0]} - {rango_anios[1]})",
         labels={"anio_estimado": "Año", "cantidad": "Cantidad de Reseñas", "estrellas_str": "Calificación"},
         color_discrete_map={"1 Estrella": COLOR_1_STAR, "2 Estrellas": COLOR_2_STAR, "3 Estrellas": COLOR_3_STAR},
         barmode="stack"
     )
     fig_evol.update_layout(
         xaxis=dict(tickmode="linear", dtick=1),
-        height=420,
-        margin=dict(l=10, r=10, t=40, b=10)
+        height=380,
+        margin=dict(l=10, r=10, t=20, b=10)
     )
     st.plotly_chart(fig_evol, use_container_width=True)
 
-    st.subheader("Evolución de los Principales Motivos de Queja a lo largo del tiempo")
-    if len(df_filtrado_texto) > 0:
-        top_cats = df_filtrado_texto["categoria_principal"].value_counts().head(4).index
-        sub_time = df_filtrado_texto[df_filtrado_texto["categoria_principal"].isin(top_cats)]
-        cat_time = sub_time.groupby(["anio_estimado", "categoria_principal"]).size().reset_index(name="quejas")
-        
-        # Doble codificación accesible: Color + Forma de marcador (círculo, cuadrado, triángulo, rombo) + Estilo de línea (sólida, guiones, puntos)
-        fig_cat_time = px.line(
-            cat_time,
-            x="anio_estimado",
-            y="quejas",
-            color="categoria_principal",
-            symbol="categoria_principal",
-            line_dash="categoria_principal",
-            color_discrete_sequence=HIERARCHY_PALETTE,
-            symbol_sequence=ACCESSIBLE_SYMBOLS,
-            line_dash_sequence=ACCESSIBLE_DASHES,
-            labels={"anio_estimado": "Año", "quejas": "Cantidad de Quejas", "categoria_principal": "Motivo"},
-            title="Tendencia Anual por Categoría de Queja"
-        )
-        fig_cat_time.update_traces(
-            marker=dict(size=9, line=dict(width=1, color="#FFFFFF")),
-            line=dict(width=2.5)
-        )
-        fig_cat_time.update_layout(
-            xaxis=dict(tickmode="linear", dtick=1),
-            height=400,
-            margin=dict(l=10, r=10, t=40, b=10)
-        )
-        st.plotly_chart(fig_cat_time, use_container_width=True)
+
+# ==============================================================================
+# 3. MAPEO DE PROCESOS AS-IS
+# ==============================================================================
+elif menu == "3. Mapeo de Procesos AS-IS":
+    st.markdown('<div class="main-header">Mapeo de Procesos AS-IS y Cuellos de Botella</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Relevamiento paso a paso de los circuitos operativos clave y su correlación con la evidencia empírica</div>', unsafe_allow_html=True)
+
+    tab_proc1, tab_proc2 = st.tabs([
+        "a) Venta, Corte y Entrega de Placas",
+        "b) Gestión de Stock e Inventario"
+    ])
+
+    with tab_proc1:
+        st.subheader("Circuito AS-IS: Proceso de Venta, Corte y Entrega de Placas")
+        st.markdown("""
+        Este proceso comprende desde el ingreso del cliente (presencial o remoto) hasta el retiro o flete del pedido fraccionado.
+        """)
+
+        col_p1, col_p2 = st.columns([6, 4])
+        with col_p1:
+            st.markdown("""
+            <div class="process-card">
+                <h4>Paso 1: Asesoramiento y Cotización en Mostrador</h4>
+                <p><b>Entradas:</b> Solicitud del cliente, medidas preliminares o croquis en papel.<br>
+                <b>Procesamiento:</b> El vendedor transcribe las medidas manualmente o en un software local. Si el cliente no es experto, el tiempo de asesoramiento se extiende.<br>
+                <b>Salida:</b> Hoja de presupuesto impresa o cotización verbal.<br>
+                <small style="color: #475569;">📌 <i>Hipótesis operativa:</i> El vendedor atiende llamadas telefónicas y mostrador en simultáneo, generando demoras en piso.</small></p>
+            </div>
+            
+            <div class="process-card">
+                <h4>Paso 2: Facturación y Cobro en Caja</h4>
+                <p><b>Entradas:</b> Presupuesto en mano y medio de pago.<br>
+                <b>Procesamiento:</b> El cliente hace una segunda fila obligatoria para abonar. La cajera vuelve a cargar los datos en el sistema POS.<br>
+                <b>Salida:</b> Factura y remito de corte físico en 2 copias.<br>
+                <small style="color: #0072B2;">📊 <i>Evidencia de campo:</i> El 56% de las quejas se concentran en la fricción de atención y lentitud en caja/mostrador.</small></p>
+            </div>
+
+            <div class="process-card">
+                <h4>Paso 3: Taller de Corte y Optimización</h4>
+                <p><b>Entradas:</b> Remito impreso derivado al taller.<br>
+                <b>Procesamiento:</b> El operario carga el esquema en el optimizador computarizado. Si hay cola de trabajo acumulada, el plazo de entrega se estira de 2 a 3 semanas.<br>
+                <b>Salida:</b> Placas cortadas, rotuladas y embaladas.</p>
+            </div>
+
+            <div class="process-card">
+                <h4>Paso 4: Entrega o Flete</h4>
+                <p><b>Entradas:</b> Comprobante de pago presentado en depósito.<br>
+                <b>Procesamiento:</b> Tercera fila para control de mercadería y carga en vehículo particular o coordinación manual de flete.<br>
+                <b>Salida:</b> Mercadería retirada y firma de conformidad.</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col_p2:
+            st.markdown("""
+            <div style="background-color: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 8px; padding: 1.2rem;">
+                <h4 style="color: #991B1B; margin-top: 0;">⚠️ Cuellos de Botella y Fricciones Detectadas</h4>
+                <ul style="color: #7F1D1D; font-size: 0.9rem; padding-left: 1.2rem;">
+                    <li><b>Triple Fila Obligatoria:</b> Venta &rarr; Caja &rarr; Depósito/Corte (genera el 17.3% de quejas por demoras).</li>
+                    <li><b>Desconexión de Canales:</b> Teléfono y WhatsApp no cuentan con catálogo en tiempo real ni turnero.</li>
+                    <li><b>Horarios rígidos de corte:</b> Rechazo de pedidos cerca del horario de cierre de taller.</li>
+                    <li><b>Falta de autogestión web:</b> El carpintero no puede cargar su despiece desde su taller.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("**Testimonios del Proceso:**")
+            st.markdown("""
+            <div class="quote-box">
+                "Fui a pedir un presupuesto... la señora me atendió bastante mal, se ponía a responder mensajes del celular... me mandó a la parte de atrás a ver los modelos y que saque conclusiones... y después de todo te dicen entrega en 2 a 3 semanas." — <b>Sergio M.</b>
+            </div>
+            """, unsafe_allow_html=True)
+
+    with tab_proc2:
+        st.subheader("Circuito AS-IS: Proceso de Gestión de Stock e Inventario")
+        st.markdown("""
+        Este proceso abarca la reposición, almacenamiento, control de inventario y disponibilidad comercial de materiales.
+        """)
+
+        col_s1, col_s2 = st.columns([6, 4])
+        with col_s1:
+            st.markdown("""
+            <div class="process-card">
+                <h4>Paso 1: Consulta de Disponibilidad Comercial</h4>
+                <p><b>Entradas:</b> Consulta de cliente en mostrador o WhatsApp.<br>
+                <b>Procesamiento:</b> El vendedor consulta una planilla o sistema local que no descuenta stock en tiempo real ni reserva placas en proceso de corte.<br>
+                <b>Salida:</b> Confirmación de stock al cliente.</p>
+            </div>
+
+            <div class="process-card">
+                <h4>Paso 2: Detección de Quiebre de Stock Físico</h4>
+                <p><b>Entradas:</b> Remito emitido enviado a depósito.<br>
+                <b>Procesamiento:</b> El operario de depósito advierte que la placa solicitada se agotó o está dañada, obligando a anular la venta o reemplazar el material.<br>
+                <b>Salida:</b> Fricción comercial, devoluciones o retrasos.<br>
+                <small style="color: #0072B2;">📊 <i>Evidencia de campo:</i> Clientes reportan confirmar stock por WhatsApp y al llegar al local no está disponible.</small></p>
+            </div>
+
+            <div class="process-card">
+                <h4>Paso 3: Reabastecimiento a Proveedores</h4>
+                <p><b>Entradas:</b> Conteo visual periódico o reclamo de faltante.<br>
+                <b>Procesamiento:</b> Emisión manual de órdenes de compra a fabricantes líderes.<br>
+                <b>Salida:</b> Recepción de camión y estiba en depósito.<br>
+                <small style="color: #475569;">📌 <i>Hipótesis operativa:</i> No existe punto de pedido automático (ROP / EOQ) integrado al sistema de facturación.</small></p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col_s2:
+            st.markdown("""
+            <div style="background-color: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 8px; padding: 1.2rem;">
+                <h4 style="color: #991B1B; margin-top: 0;">⚠️ Ineficiencias de Inventario Detectadas</h4>
+                <ul style="color: #7F1D1D; font-size: 0.9rem; padding-left: 1.2rem;">
+                    <li><b>Asimetría de Información:</b> Desalineación entre lo que el vendedor ve en pantalla y las placas físicamente aptas en depósito.</li>
+                    <li><b>Falta de Reserva Automática:</b> Las placas asignadas a un pedido de corte no se bloquean de inmediato, generando sobreventa.</li>
+                    <li><b>Gestión Reactiva de Compras:</b> Reposición basada en urgencias en lugar de pronósticos de demanda impulsados por datos (BI).</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
 
 
-# ==========================================
-# 3. TOP MOTIVOS DE QUEJA (DINÁMICO SEGÚN AÑOS)
-# ==========================================
-elif menu == "Top Motivos de Queja":
-    st.markdown('<div class="main-header">Diagnóstico Dinámico del Top de Problemas</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="sub-header">Análisis actualizado para el período seleccionado: <b>{rango_anios[0]} - {rango_anios[1]}</b> ({len(df_filtrado_texto)} quejas con texto)</div>', unsafe_allow_html=True)
+# ==============================================================================
+# 4. MATRIZ FODA ESTRATÉGICA
+# ==============================================================================
+elif menu == "4. Matriz FODA Estratégica":
+    st.markdown('<div class="main-header">Matriz FODA Cruzada con Enfoque Tecnológico</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Cruce estratégico validado con evidencia empírica de minería de opiniones (Google Maps)</div>', unsafe_allow_html=True)
 
-    if len(df_filtrado_texto) == 0:
-        st.warning("No hay suficientes reseñas con texto en el rango de años seleccionado para elaborar el diagnóstico.")
-    else:
-        top_series = df_filtrado_texto["categoria_principal"].value_counts()
-        top_categories = list(top_series.index[:3])
-        total_periodo_texto = len(df_filtrado_texto)
+    tab_foda, tab_cruces, tab_gap = st.tabs([
+        "Matriz Cuadrante FODA",
+        "Cruces Estratégicos (FO, DO, FA, DA)",
+        "Diagnóstico de Brecha (Discurso vs. Realidad)"
+    ])
 
-        tab_names = []
-        for i, cat in enumerate(top_categories, 1):
-            cnt = top_series[cat]
-            pct = (cnt / total_periodo_texto) * 100
-            tab_names.append(f"#{i} {cat} ({pct:.1f}%)")
-        tab_names.append("Matriz Comparativa")
+    with tab_foda:
+        c_izq, c_der = st.columns(2)
+        with c_izq:
+            st.markdown("""
+            <div class="foda-card foda-f">
+                <h4 style="color: #009E73; margin-top:0;">🛡️ FORTALEZAS (Internas)</h4>
+                <ul>
+                    <li><b>Taller Computarizado:</b> Maquinaria industrial de corte y pegado de cantos con optimizador digital de placas.</li>
+                    <li><b>Trayectoria y Respaldo (+60 años):</b> Alianzas comerciales sólidas con fabricantes líderes de placas y perfiles de construcción en seco.</li>
+                    <li><b>Variedad de Catálogo y Escala:</b> Capacidad de abastecer grandes obras y distribución mayorista en la región.</li>
+                    <li><b>Desarrollo de Marca Propia:</b> Línea de productos <i>Area Base</i> para control de calidad y margen.</li>
+                </ul>
+            </div>
 
-        tabs = st.tabs(tab_names)
+            <div class="foda-card foda-d">
+                <h4 style="color: #D55E00; margin-top:0;">⚠️ DEBILIDADES (Internas)</h4>
+                <ul>
+                    <li><b>Circuito de Compra Fragmentado:</b> Triple fila obligatoria (Venta &rarr; Caja &rarr; Despacho) sin terminales mPOS ni turnero digital.</li>
+                    <li><b>Canales Remotos Saturados:</b> WhatsApp y teléfono atendidos por personal de piso sin CRM ni chatbot de derivación.</li>
+                    <li><b>Inexistencia de Portal Web de Autogestión:</b> El cliente profesional no puede despiezar, cotizar ni reservar turnos online.</li>
+                    <li><b>Sistemas Desintegrados:</b> Desconexión entre stock de salón, taller de corte y facturación.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
 
-        for i, cat in enumerate(top_categories):
-            with tabs[i]:
-                cnt = top_series[cat]
-                pct = (cnt / total_periodo_texto) * 100
-                sub_df = df_filtrado_texto[df_filtrado_texto["categoria_principal"] == cat]
-                avg_stars = sub_df["estrellas"].mean()
-                resp_rate = (sub_df["respuesta_dueno"].notna().sum() / len(sub_df)) * 100
+        with c_der:
+            st.markdown("""
+            <div class="foda-card foda-o">
+                <h4 style="color: #0072B2; margin-top:0;">🚀 OPORTUNIDADES (Externas)</h4>
+                <ul>
+                    <li><b>Portal Web B2B de Despiece 24/7:</b> Habilitar cotizador y optimizador online para carpinteros y profesionales.</li>
+                    <li><b>CRM Conversacional y Automatización:</b> Respuestas instantáneas en WhatsApp para stock, horarios y seguimiento de pedidos.</li>
+                    <li><b>Integración ERP End-to-End:</b> Trazabilidad de inventario en tiempo real entre salón, depósito y taller.</li>
+                    <li><b>Reingeniería 'Smart Retail':</b> Turnero digital por QR y cobro unificado en punto de venta.</li>
+                </ul>
+            </div>
 
-                st.subheader(f"Problema #{i+1}: {cat}")
-                
-                col_t1, col_t2 = st.columns([7, 3])
-                with col_t1:
-                    if "Atención" in cat or "Trato" in cat:
-                        diag_text = "Principal foco de insatisfacción en el período seleccionado. Se concentran reclamos sobre la predisposición en cajas y mostrador de ventas, falta de asesoramiento y actitudes percibidas como distantes o poco colaborativas."
-                    elif "Espera" in cat or "Demora" in cat:
-                        diag_text = "Fricción operativa en los tiempos del proceso de compra: esperas consecutivas para atención, caja y despacho de mercadería o cortes."
-                    elif "Teléfono" in cat or "WhatsApp" in cat or "Canales" in cat:
-                        diag_text = "Canal con la calificación más baja. Clientes experimentan llamadas sin respuesta o demoras prolongadas en presupuestos por mensajería antes de visitar el local."
-                    elif "Precios" in cat or "Presupuesto" in cat:
-                        diag_text = "Percepción de precios elevados respecto al mercado o discrepancias entre cotizaciones previas y valores finales facturados."
-                    elif "Cortes" in cat or "Taller" in cat:
-                        diag_text = "Inconvenientes con el servicio de dimensionado de placas, restricciones en horarios de corte o demoras en la preparación."
-                    elif "Stock" in cat:
-                        diag_text = "Disconformidad por falta de mercadería informada previamente como disponible."
-                    else:
-                        diag_text = "Reclamos variados sobre la operatoria general del comercio en el período seleccionado."
+            <div class="foda-card foda-a">
+                <h4 style="color: #E69F00; margin-top:0;">⚡ AMENAZAS (Externas)</h4>
+                <ul>
+                    <li><b>Competencia Nativa Digital:</b> Grandes superficies (Easy, Sodimac) y madereras con cotizadores web y checkout ágil.</li>
+                    <li><b>Nuevas Generaciones de Clientes:</b> Profesionales y público DIY que exigen atención 100% digital e inmediata.</li>
+                    <li><b>Deterioro de Reputación Online:</b> Impacto negativo de reseñas visibles en Google Maps sin gestión de respuesta sistemática.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
 
-                    st.markdown(f"**Diagnóstico del período ({rango_anios[0]}-{rango_anios[1]}):**")
-                    st.write(diag_text)
+    with tab_cruces:
+        st.subheader("Matriz de Cruces Estratégicos")
+        col_c1, col_c2 = st.columns(2)
+        with col_c1:
+            st.markdown("""
+            #### 🌟 Estrategias FO (Apalancamiento)
+            * **Plataforma Web de Despiece 24/7:** Conectar el optimizador de cortes interno a una interfaz web para que carpinteros carguen planos y reserven turnos.
+            * **Portal B2B de Construcción en Seco:** Aprovechar el liderazgo de catálogo para ofrecer a constructoras abastecimiento con seguimiento de entregas.
+            
+            #### 🛡️ Estrategias FA (Blindaje)
+            * **Compatibilidad CAD/CAM:** Integración de software de diseño con el sistema de pedidos para crear barreras de salida frente a grandes cadenas.
+            * **Garantía Digital de Calidad:** Certificación de tolerancias mínimas de corte y plazos garantizados para blindarse de competidores informales.
+            """)
+        with col_c2:
+            st.markdown("""
+            #### 🔄 Estrategias DO (Reingeniería Digital)
+            * **CRM Omnicanal en WhatsApp:** Desacoplar la atención telefónica/WhatsApp de los vendedores de piso mediante chatbots y agentes dedicados.
+            * **Reingeniería de Salón (Turnero + mPOS):** Eliminar la triple fila implementando turneros por código QR y cobro en mostrador.
+            
+            #### 🚨 Estrategias DA (Mitigación de Riesgos)
+            * **Rediseño de Puestos y Descompresión Operativa:** Liberar a cajeras y vendedores de tareas manuales repetitivas para reducir el 56% de quejas por atención.
+            * **Protocolo de Reputación Online:** Gestionar activamente las opiniones en Google Maps y capturar satisfacción en caja (CSAT/NPS).
+            """)
 
-                    st.markdown("**Citas textuales de clientes en este período:**")
-                    sample_reviews = sub_df[sub_df["texto"].str.len() > 30].head(3)
-                    if len(sample_reviews) > 0:
-                        for _, r in sample_reviews.iterrows():
-                            quote_txt = r['texto'].replace('\n', ' ')
-                            st.markdown(f'<div class="quote-box">"{quote_txt}" — <b>{r["autor"]}</b> ({int(r["estrellas"])} Estrellas, {r["anio_estimado"]})</div>', unsafe_allow_html=True)
-                    else:
-                        for _, r in sub_df.head(2).iterrows():
-                            st.markdown(f'<div class="quote-box">"{r["texto"]}" — <b>{r["autor"]}</b> ({int(r["estrellas"])} Estrellas)</div>', unsafe_allow_html=True)
-
-                with col_t2:
-                    st.metric(f"Quejas ({rango_anios[0]}-{rango_anios[1]})", f"{cnt}")
-                    st.metric("% del Total en Período", f"{pct:.1f}%")
-                    st.metric("Promedio de Estrellas", f"{avg_stars:.2f} / 5.0")
-                    st.metric("Tasa de Respuesta", f"{resp_rate:.1f}%")
-
-        with tabs[-1]:
-            st.subheader(f"Matriz Comparativa de Categorías ({rango_anios[0]} - {rango_anios[1]})")
-            resumen_df = []
-            for cat in categorias_disponibles:
-                sub = df_filtrado_texto[df_filtrado_texto["categoria_principal"] == cat]
-                if len(sub) > 0:
-                    resumen_df.append({
-                        "Categoría": cat,
-                        "Quejas": len(sub),
-                        "% del Total": f"{len(sub)/len(df_filtrado_texto)*100:.1f}%",
-                        "Promedio Estrellas": round(sub["estrellas"].mean(), 2),
-                        "% Respondidas": f"{sub['respuesta_dueno'].notna().sum()/len(sub)*100:.1f}%"
-                    })
-            if resumen_df:
-                st.dataframe(pd.DataFrame(resumen_df), use_container_width=True, hide_index=True)
-            else:
-                st.info("No hay datos para la matriz en este rango de años.")
+    with tab_gap:
+        st.subheader("Contraste: Discurso Institucional vs. Procesos Reales")
+        gap_table = [
+            {"Dimensión": "1. Circuito de Atención", "Declaración": "Búsqueda de la excelencia y máxima satisfacción.", "Realidad Operativa": "3 filas obligatorias, demoras y personal saturado.", "Impacto": "56% quejas de atención + 17% de demoras."},
+            {"Dimensión": "2. Canales Remotos", "Declaración": "Asesoramiento y sinergia fluida con el cliente.", "Realidad Operativa": "Teléfonos que no atienden y WhatsApp sin CRM.", "Impacto": "8.7% quejas por incomunicación y llamadas cortadas."},
+            {"Dimensión": "3. Taller y Cortes", "Declaración": "Sistema computarizado de optimización de vanguardia.", "Realidad Operativa": "Optimizador de uso interno cerrado a clientes.", "Impacto": "Demoras de 2 a 3 semanas y restricciones de horarios."},
+            {"Dimensión": "4. Control de Stock", "Declaración": "Garantizar procesos confiables y seguros.", "Realidad Operativa": "Planillas desintegradas sin descuento en tiempo real.", "Impacto": "Quiebres de stock no avisados al cliente."},
+            {"Dimensión": "5. Reputación Digital", "Declaración": "Calidad total y mejora continua permanente.", "Realidad Operativa": "68.3% de reseñas negativas sin respuesta.", "Impacto": "Erosión de imagen en Google Maps."}
+        ]
+        st.dataframe(pd.DataFrame(gap_table), use_container_width=True, hide_index=True)
 
 
-# ==========================================
-# 4. EXPLORADOR DE RESEÑAS
-# ==========================================
-elif menu == "Explorador de Reseñas":
+# ==============================================================================
+# 5. EXPLORADOR DE RESEÑAS
+# ==============================================================================
+elif menu == "5. Explorador de Reseñas (Voz del Cliente)":
     st.markdown('<div class="main-header">Explorador Interactivo de Reseñas</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="sub-header">Mostrando <b>{len(df_filtrado)}</b> de {len(df)} reseñas ({rango_anios[0]} - {rango_anios[1]})</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="sub-header">Mostrando <b>{len(df_filtrado)}</b> reseñas filtradas ({rango_anios[0]} - {rango_anios[1]})</div>', unsafe_allow_html=True)
 
-    busqueda = st.text_input("Buscar palabras clave en reseñas o respuestas:", "")
+    busqueda = st.text_input("🔍 Buscar por palabras clave, autor o texto de respuesta:", "")
 
     df_display = df_filtrado.copy()
     if busqueda:
@@ -480,260 +711,70 @@ elif menu == "Explorador de Reseñas":
             df_display["respuesta_dueno"].fillna("").str.contains(busqueda, case=False, regex=False)
         )
         df_display = df_display[mask]
-        st.caption(f"Coincidencias encontradas con '{busqueda}': {len(df_display)}")
+        st.caption(f"Coincidencias encontradas: {len(df_display)}")
 
     for idx, row in df_display.iterrows():
-        stars_str = f"[{int(row['estrellas'])} Estrellas]"
+        stars_str = f"[{int(row['estrellas'])} ⭐]"
         cat_badge = f"`{row['categoria_principal']}`" if pd.notna(row.get("categoria_principal")) else "`Sin categoría`"
-        year_badge = f"Año: {row['anio_estimado']} ({row['fecha']})"
+        year_badge = f"Año: {row['anio_estimado']}"
         
         with st.expander(f"{stars_str} | **{row['autor']}** — {year_badge} — {cat_badge}", expanded=False):
             if pd.notna(row['texto']) and row['texto'].strip():
                 st.markdown(f"**Opinión:** {row['texto']}")
             else:
-                st.markdown("*El usuario dejó solo calificación sin comentario de texto.*")
+                st.markdown("*El usuario dejó solo calificación sin texto.*")
                 
             if pd.notna(row['respuesta_dueno']) and row['respuesta_dueno'].strip():
                 st.markdown(f"""
                 <div style="background-color: #F0FDF4; border-left: 4px solid #009E73; padding: 0.6rem 1rem; border-radius: 4px; margin-top: 0.5rem;">
-                    <b>Respuesta oficial:</b><br>{row['respuesta_dueno']}
+                    <b>Respuesta oficial del comercio:</b><br>{row['respuesta_dueno']}
                 </div>
                 """, unsafe_allow_html=True)
 
     st.markdown("---")
     st.download_button(
-        label="Descargar datos filtrados en CSV",
+        label="📥 Descargar datos filtrados (CSV)",
         data=df_display.to_csv(index=False, encoding="utf-8-sig").encode("utf-8-sig"),
         file_name=f"resenas_filtradas_{rango_anios[0]}_{rango_anios[1]}.csv",
         mime="text/csv"
     )
 
 
-## ==========================================
-# 5. MATRIZ FODA ESTRATÉGICA
-# ==========================================
-elif menu == "Matriz FODA":
-    st.markdown('<div class="main-header">Matriz FODA: Foco en Tecnologías y Procesos</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Diagnóstico estratégico: Análisis de <b>procesos de negocio</b>, <b>brechas tecnológicas</b> e impacto en la experiencia del cliente</div>', unsafe_allow_html=True)
+# ==============================================================================
+# 6. HOJA DE RUTA & SUPUESTOS BASE
+# ==============================================================================
+elif menu == "6. Hoja de Ruta & Supuestos Base":
+    st.markdown('<div class="main-header">Hoja de Ruta de Transformación Digital y Supuestos Base</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Recomendaciones estratégicas y registro de supuestos para garantizar consistencia en las Entregas 2 (ERP), 3 (CRM) y 4 (BI)</div>', unsafe_allow_html=True)
 
-    # Métricas destacadas del cruce tecnológico y de procesos
-    m1, m2, m3, m4 = st.columns(4)
-    with m1:
+    col_h1, col_h2 = st.columns(2)
+
+    with col_h1:
+        st.subheader("🎯 Hoja de Ruta de Iniciativas Tecnológicas")
         st.markdown("""
-        <div class="metric-card">
-            <div class="metric-value" style="color: #D55E00;">3 Pasos</div>
-            <div class="metric-label">Circuito Fragmentado (Venta &rarr; Caja &rarr; Despacho)</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with m2:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-value" style="color: #D55E00;">0% CRM</div>
-            <div class="metric-label">Canales Remotos sin Ticketing / Chatbot</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with m3:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-value" style="color: #0072B2;">82.0%</div>
-            <div class="metric-label">Quejas Derivadas de Fricción Operativa y Procesos</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with m4:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-value" style="color: #009E73;">Optimizador</div>
-            <div class="metric-label">Tecnología en Taller (Corte Computarizado)</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    tab_foda, tab_cruces, tab_gap = st.tabs([
-        "Matriz Cuadrante FODA (Tecnología y Procesos)",
-        "Cruces Estratégicos (FO, DO, FA, DA)",
-        "Diagnóstico de Brecha (Discurso vs. Procesos Reales)"
-    ])
-
-    with tab_foda:
-        col_izq, col_der = st.columns(2)
-
-        with col_izq:
-            st.markdown("""
-            <div class="foda-card foda-f">
-                <div class="foda-title" style="color: #009E73;">
-                    <span>🛡️ FORTALEZAS (Internas)</span>
-                    <span class="foda-badge-f">Capacidades y Tecnología Actual</span>
-                </div>
-                <ul>
-                    <li><b>Tecnología de Taller Computarizada:</b> Incorporación de maquinaria con sistema computarizado de optimización de cortes de placas, mecanizado, fresado y pegado de cantos.</li>
-                    <li><b>Solidez Operativa y Trayectoria (+60 años):</b> Cadena de suministro consolidada con fabricantes líderes de placas (MDF/melaminas) y construcción en seco bajo normas de calidad.</li>
-                    <li><b>Infraestructura Logística y Depósito:</b> Capacidad instalada para abastecimiento de gran volumen a revendedores y constructoras en La Plata y a nivel nacional.</li>
-                    <li><b>Control de Producto Propio:</b> Desarrollo de la línea de productos <i>Area Base</i>, permitiendo control directo de estándares y márgenes.</li>
-                    <li><b>Estructura Formal de Calidad:</b> Políticas de calidad total y directrices orientadas a la mejora continua y asociatividad con proveedores.</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-
-            st.markdown("""
-            <div class="foda-card foda-d">
-                <div class="foda-title" style="color: #D55E00;">
-                    <span>⚠️ DEBILIDADES (Internas - Procesos y Tecnología)</span>
-                    <span class="foda-badge-d">Focos Críticos de Ineficiencia</span>
-                </div>
-                <ul>
-                    <li><b>Fragmentación del Proceso de Compra Presencial:</b> Flujo secuencial desconectado que obliga al cliente a 3 filas obligatorias (1. Asesor/Ventas &rarr; 2. Caja/Facturación &rarr; 3. Despacho/Corte). Ausencia de punto de venta integrado o terminales de cobro móviles (mPOS) en mostrador.</li>
-                    <li><b>Inexistencia de Sistema de Gestión de Esperas (Turnero Digital):</b> Ausencia de turnero inteligente con visualización en pantalla o alerta móvil para despacho y corte, provocando incertidumbre y esperas físicas prolongadas.</li>
-                    <li><b>Canales Remotos Desarticulados (Sin CRM ni Automatización):</b> WhatsApp y líneas telefónicas gestionadas de forma artesanal por personal de salón, sin <i>ticketing</i> ni chatbots de preguntas frecuentes; genera llamadas colgadas y demoras de días en presupuestos.</li>
-                    <li><b>Brecha de Autogestión y E-Commerce:</b> A pesar de contar con optimizador de cortes interno, no existe una plataforma web de autogestión para que profesionales carguen sus planos de despiece, coticen y paguen 100% online.</li>
-                    <li><b>Desconexión entre Sistemas de Información (ERP, Stock y Taller):</b> Desalineación entre el stock real de salón, la cola de trabajo del taller de corte y los mostradores de venta, generando discrepancias de precios y faltantes no advertidos.</li>
-                    <li><b>Sobrecarga del Factor Humano por Fricción de Sistemas:</b> El 56% de quejas por "mala atención" es consecuencia directa del colapso operativo: empleados saturados por tareas administrativas manuales y atención simultánea presencial/telefónica.</li>
-                    <li><b>Falta de Monitoreo Digital de Satisfacción (Feedback Loop):</b> Ausencia de captura digital de satisfacción en el punto de cobro (NPS/CSAT vía tablet/QR) y desatención sistemática de la reputación en Google Maps (68.3% sin respuesta).</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with col_der:
-            st.markdown("""
-            <div class="foda-card foda-o">
-                <div class="foda-title" style="color: #0072B2;">
-                    <span>🚀 OPORTUNIDADES (Externas)</span>
-                    <span class="foda-badge-o">Innovación y Digitalización</span>
-                </div>
-                <ul>
-                    <li><b>Portal Web B2B de Autogestión y Despiece 24/7:</b> Habilitar una plataforma digital de corte y compra online para carpinteros, arquitectos y constructores, descongestionando el local físico.</li>
-                    <li><b>Automatización Omnicanal de WhatsApp:</b> Implementar CRM conversacional y chatbot con IA para cotizaciones rápidas, catálogo, horarios y consulta de estado de pedidos.</li>
-                    <li><b>Reingeniería 'Smart Retail' en Salón:</b> Digitalizar el salón con turneros inteligentes por QR, pantallas de seguimiento de corte y cobro integrado en el puesto de venta.</li>
-                    <li><b>Integración ERP End-to-End:</b> Trazabilidad unificada en tiempo real: desde el ingreso de mercadería y cola de corte hasta la facturación y el despacho final.</li>
-                    <li><b>Capacitación Virtual y Fidelización Profesional:</b> Plataforma de formación online sobre construcción en seco y herrajes para consolidar la comunidad técnica de la región.</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-
-            st.markdown("""
-            <div class="foda-card foda-a">
-                <div class="foda-title" style="color: #E69F00;">
-                    <span>⚡ AMENAZAS (Externas)</span>
-                    <span class="foda-badge-a">Disrupción y Competencia</span>
-                </div>
-                <ul>
-                    <li><b>Competidores Nativos Digitales y Grandes Cadenas:</b> Superficies comerciales (Easy, Sodimac) y madereras modernas con e-commerce, cotizadores automáticos y checkout ágil.</li>
-                    <li><b>Obsolescencia ante Nuevos Perfiles de Clientes:</b> Profesionales jóvenes y público DIY que priorizan proveedores con plataformas 100% digitales y respuestas inmediatas.</li>
-                    <li><b>Erosión de Marca en Plataformas Digitales:</b> Reseñas negativas visibles en Google Maps que disuaden a nuevos clientes antes de visitar el local por falta de gestión activa de reputación.</li>
-                    <li><b>Inflación y Desfase en Listas de Precios:</b> Fricción comercial cuando las cotizaciones manuales tardías no coinciden con los precios vigentes al momento de la compra física.</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-
-    with tab_cruces:
-        st.subheader("Matriz de Cruces Estratégicos: Enfoque en Procesos y Tecnología")
-        c_fo, c_do = st.columns(2)
-        with c_fo:
-            st.markdown("""
-            #### 🌟 Estrategias FO (Apalancamiento Tecnológico)
-            * **Plataforma Web de Despiece y Optimización 24/7:** Conectar el software optimizador de cortes computarizado con una interfaz web para que carpinteros suban sus proyectos, coticen y reserven turnos de corte en tiempo real.
-            * **Ecosistema Digital B2B para Construcción en Seco:** Aprovechar el catálogo líder y la escala de distribución para proveer a constructoras con un portal de abastecimiento con seguimiento de stock y entregas.
-            """)
-
-            st.markdown("""
-            #### 🛡️ Estrategias FA (Blindaje Tecnológico y Operativo)
-            * **Integración CAD/CAM para Profesionales:** Ofrecer plugins o compatibilidad directa entre programas de diseño de carpintería y el sistema de pedidos de la empresa, creando barreras de salida frente a grandes superficies.
-            * **Trazabilidad y Calidad Certificada:** Garantizar plazos de entrega exactos y tolerancias mínimas en cortes mediante control digital, diferenciándose de competidores informales.
-            """)
-
-        with c_do:
-            st.markdown("""
-            #### 🔄 Estrategias DO (Reingeniería y Transformación Digital)
-            * **Implementación de CRM Omnicanal en WhatsApp:** Desconectar la atención telefónica/virtual de los vendedores de salón; implementar chatbot para consultas frecuentes y derivación ágil de presupuestos complejos.
-            * **Reingeniería del Circuito de Tienda (Turnero + mPOS):** Eliminar la triple fila implementando turneros digitales con aviso al móvil y cobro directo en el mostrador para compras menores o pedidos preparados.
-            * **Sincronización Total ERP - Stock - Taller:** Integrar la visualización del stock y la cola de trabajo del taller para ofrecer plazos de entrega realistas y evitar quiebres de inventario.
-            """)
-
-            st.markdown("""
-            #### 🚨 Estrategias DA (Mitigación de Riesgos Críticos)
-            * **Plan de Choque Operativo y Rediseño de Puestos:** Rediseñar las tareas del personal de caja y mostrador, eliminando la sobrecarga administrativa manual y capacitando en experiencia de cliente para frenar la sangría de clientes.
-            * **Automatización del Circuito de Reputación Online:** Integrar la API de Google Business con un panel interno para responder el 100% de las quejas en menos de 24-48 horas y habilitar captura de satisfacción en caja (QR/Tablet).
-            """)
-
-    with tab_gap:
-        st.subheader("Diagnóstico de la Brecha: Discurso vs. Procesos y Tecnologías Reales")
-        st.markdown("Contraste técnico entre la política declarada y los puntos de falla en procesos y herramientas de gestión:")
-
-        gap_data = [
-            {
-                "Dimensión Tecnológica / Proceso": "1. Circuito de Compra y Atención Presencial",
-                "Postura Institucional Declarada": "Búsqueda de la excelencia operativa y máxima satisfacción del cliente en cada interacción.",
-                "Falla de Proceso / Tecnología Detectada": "Proceso fragmentado en 3 filas sucesivas (Asesor -> Caja -> Despacho). Ausencia de cobro móvil (mPOS) y falta de turnero digital.",
-                "Impacto en Clientes": "56% quejas de atención + 17% quejas de espera (colapso percibido como mala predisposición del personal)."
-            },
-            {
-                "Dimensión Tecnológica / Proceso": "2. Gestión de Canales Remotos (WhatsApp / Teléfono)",
-                "Postura Institucional Declarada": "Interacción y sinergia fluida con clientes y soluciones integrales de asesoramiento.",
-                "Falla de Proceso / Tecnología Detectada": "Inexistencia de CRM, ticketing o chatbots. Vendedores de salón atienden teléfonos y WhatsApp a la par de clientes en piso.",
-                "Impacto en Clientes": "8.7% quejas: llamadas colgadas, teléfonos que no atienden y demoras de días para recibir un presupuesto."
-            },
-            {
-                "Dimensión Tecnológica / Proceso": "3. Servicio de Taller y Optimización de Cortes",
-                "Postura Institucional Declarada": "Sistema computarizado de optimización de cortes y mecanizado de vanguardia para trabajos de excelencia.",
-                "Falla de Proceso / Tecnología Detectada": "El optimizador es de uso interno exclusivo; no está abierto vía web a clientes. Falta de sincronización de tiempos de taller en el mostrador.",
-                "Impacto en Clientes": "Reclamos por horarios rígidos de recepción de corte, esperas de taller y discrepancias en plazos de entrega."
-            },
-            {
-                "Dimensión Tecnológica / Proceso": "4. Integración de Sistemas de Información (ERP / Stock)",
-                "Postura Institucional Declarada": "Garantizar procesos confiables, capaces y seguros desde el inicio promoviendo la gestión de riesgos.",
-                "Falla de Proceso / Tecnología Detectada": "Desfasaje entre cotizaciones manuales, inventario físico disponible y valores finales facturados en caja.",
-                "Impacto en Clientes": "Quejas sobre precios discordantes entre consulta y cobro, y faltantes no anticipados de placas."
-            },
-            {
-                "Dimensión Tecnológica / Proceso": "5. Reputación Digital y Medición de Calidad (CX)",
-                "Postura Institucional Declarada": "Sistema de gestión de calidad total con indicadores asociados a procesos críticos y mejora continua.",
-                "Falla de Proceso / Tecnología Detectada": "Falta de medición de NPS/CSAT en el punto de cobro. Gestión reactiva de Google Maps con 68.3% de reseñas negativas sin respuesta.",
-                "Impacto en Clientes": "Deterioro público de la calificación de la empresa (promedio bajo) sin canal de contención gerencial."
-            }
-        ]
-
-        st.dataframe(pd.DataFrame(gap_data), use_container_width=True, hide_index=True)
-
-
-# ==========================================
-# 6. RECOMENDACIONES DE GESTIÓN
-# ==========================================
-elif menu == "Recomendaciones de Gestión":
-    st.markdown('<div class="main-header">Propuestas de Mejora y Acción de Gestión</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Estrategias operativas para optimizar la satisfacción del cliente</div>', unsafe_allow_html=True)
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("""
-        ### 1. Reestructuración del Circuito en Cajas y Mostrador
-        * **Problema:** Fricción recurrente por atención y predisposición en el punto de cobro.
-        * **Propuesta de Mejora:**
-          - Capacitación en servicio al cliente y resolución de objeciones.
-          - Monitoreo continuo de satisfacción en el punto de cobro.
-          - Reemplazo y refuerzo en cajas durante horarios de mayor concurrencia.
-        """)
+        1. **Fase 1 (Corto Plazo - CX Inmediato):**
+           - Implementar **CRM Conversacional en WhatsApp** con chatbot de FAQs y derivación inteligente.
+           - Protocolo de gestión de reputación online (respuesta en < 48hs en Google Maps).
+           - Medición de satisfacción en caja vía QR / terminal táctil.
         
-        st.markdown("""
-        ### 2. Optimización de Flujos y Tiempos de Espera
-        * **Problema:** Múltiples filas sucesivas (Asesoramiento -> Caja -> Despacho).
-        * **Propuesta de Mejora:**
-          - Implementar cobro integrado o turnero digital para retiro de mercadería y corte de placas.
-          - Sistema de aviso de despacho preparado.
+        2. **Fase 2 (Mediano Plazo - Reingeniería de Salón y ERP):**
+           - Implementación de **ERP Integrado** para sincronizar mostrador, caja, depósito y cola de taller.
+           - Reingeniería del circuito de tienda: **Turnero digital por QR** y cobro integrado en puesto de venta (eliminación de la triple fila).
+        
+        3. **Fase 3 (Largo Plazo - Ecosistema Digital B2B / BI):**
+           - Lanzamiento de **Portal Web de Despiece y Cotización Online 24/7** para carpinteros y arquitectos.
+           - Tableros de **Inteligencia de Negocios (BI)** para pronósticos de demanda y optimización de compras.
         """)
 
-    with c2:
+    with col_h2:
+        st.subheader("📌 Hipótesis y Supuestos Base Consolidados")
         st.markdown("""
-        ### 3. Automatización y Soporte en Canales Remotos
-        * **Problema:** Congestión telefónica y demoras en WhatsApp.
-        * **Propuesta de Mejora:**
-          - Configuración de chatbot para consultas frecuentes (catálogo, horarios, estado de corte).
-          - Asignación de rol dedicado a cotizaciones remotas para no desatender el salón.
+        Los siguientes supuestos operativos fundamentados regirán las siguientes fases del proyecto de consultoría (ERP, CRM y BI):
+        
+        * **[SB-01] Estructura Organizacional:** Asumimos una dotación de ~30 empleados (8 ventas/asesoramiento, 4 administración/cajas, 12 operarios de depósito/taller, 4 choferes y 2 directivos/gerencia), debido a la escala comercial y volumen de sucursales.
+        * **[SB-02] Software Transaccional Actual:** Asumimos que opera con un software POS / facturación contable tradicional no basado en la nube, con bases de datos locales no integradas.
+        * **[SB-03] Gestión de Stock:** Asumimos el uso de planillas Excel complementarias y conteos físicos periódicos, sin módulo de reaprovisionamiento automático (ROP/EOQ).
+        * **[SB-04] Atención Remota:** Asumimos que WhatsApp Web y las líneas telefónicas son atendidas por los mismos vendedores de mostrador sin asignación de turnos ni tickets.
+        * **[SB-05] Software de Taller:** Asumimos que cuentan con software optimizador de cortes de placa monousuario en PC de taller, sin conexión API con la web de la empresa.
         """)
 
-        st.markdown("""
-        ### 4. Protocolo de Gestión de Reputación Online
-        * **Problema:** Respuestas ocasionalmente tardías o defensivas.
-        * **Propuesta de Mejora:**
-          - Estandarizar protocolo de respuesta constructiva y empática en menos de 48 horas.
-          - Canal de contacto directo con gestión comercial para resolver inconvenientes.
-        """)
