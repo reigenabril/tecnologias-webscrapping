@@ -300,72 +300,267 @@ if menu == "1. Presentación & Diagnóstico Digital":
         """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.subheader("3. Diagnóstico de Madurez Digital (Modelo de 6 Dimensiones)")
-    st.markdown("Evaluación cualitativa y cuantitativa del nivel de preparación digital de la organización:")
+    st.subheader("3. Diagnóstico de Madurez Digital Organizacional")
+    st.markdown("""
+    Evaluación integral del nivel de madurez tecnológica y operativa de **El Emporio del Terciado S.A.** aplicando un marco multidimensional de 6 ejes (Estrategia, Tecnología, Datos, Procesos, Personas/Cultura y Clientes/Canales), fundamentado en la metodología de *Laudon & Laudon* y respaldado por la auditoría de procesos y clientes.
+    """)
+
+    # --------------------------------------------------------------------------
+    # OVERALL REVIEW / SÍNTESIS GLOBAL
+    # --------------------------------------------------------------------------
+    st.markdown("### 🌐 Overall Review: Diagnóstico y Dictamen Global")
+
+    # Scorecard global con métricas clave
+    col_ov1, col_ov2, col_ov3, col_ov4 = st.columns(4)
+    with col_ov1:
+        st.markdown("""
+        <div class="metric-card" style="border-left: 4px solid #D55E00;">
+            <div class="metric-value" style="color: #D55E00;">1.6 / 5.0</div>
+            <div class="metric-label">Nivel de Madurez Global (AS-IS)</div>
+            <div style="font-size: 0.75rem; color: #64748B; margin-top: 4px;"><b>Estado:</b> Inicial / Reactivo</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_ov2:
+        st.markdown("""
+        <div class="metric-card" style="border-left: 4px solid #0072B2;">
+            <div class="metric-value" style="color: #0072B2;">-2.4 pts</div>
+            <div class="metric-label">Brecha vs. Benchmark Digital (4.0)</div>
+            <div style="font-size: 0.75rem; color: #64748B; margin-top: 4px;">Sector retail / distribución moderno</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_ov3:
+        st.markdown("""
+        <div class="metric-card" style="border-left: 4px solid #E69F00;">
+            <div class="metric-value" style="color: #E69F00;">Silos Aislados</div>
+            <div class="metric-label">Arquitectura Predominante</div>
+            <div style="font-size: 0.75rem; color: #64748B; margin-top: 4px;">On-premise sin integración API</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_ov4:
+        st.markdown("""
+        <div class="metric-card" style="border-left: 4px solid #009E73;">
+            <div class="metric-value" style="color: #009E73;">4.1 / 5.0</div>
+            <div class="metric-label">Meta de Transformación (TO-BE)</div>
+            <div style="font-size: 0.75rem; color: #64748B; margin-top: 4px;">Con ERP + CRM + Portal B2B + BI</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Gráfico Radar + Dictamen Ejecutivo
+    col_rad1, col_rad2 = st.columns([5, 5])
+    with col_rad1:
+        st.markdown("##### 🕸️ Matriz Radar: Estado Actual (AS-IS) vs. Objetivo (TO-BE)")
+        
+        radar_categories = [
+            "1. Estrategia Digital",
+            "2. Tecnología & Infraestructura",
+            "3. Datos & Analítica",
+            "4. Procesos de Negocio",
+            "5. Personas & Cultura",
+            "6. Clientes & Canales"
+        ]
+        
+        r_asis = [1.5, 1.8, 1.2, 1.5, 2.0, 1.6]
+        r_tobe = [4.0, 4.0, 3.8, 4.2, 3.9, 4.5]
+        
+        fig_radar = go.Figure()
+        
+        fig_radar.add_trace(go.Scatterpolar(
+            r=r_asis + [r_asis[0]],
+            theta=radar_categories + [radar_categories[0]],
+            fill='toself',
+            name='Madurez Actual (AS-IS) [1.6/5.0]',
+            line=dict(color='#0072B2', width=2.5),
+            fillcolor='rgba(0, 114, 178, 0.25)',
+            marker=dict(size=7, symbol='circle')
+        ))
+        
+        fig_radar.add_trace(go.Scatterpolar(
+            r=r_tobe + [r_tobe[0]],
+            theta=radar_categories + [radar_categories[0]],
+            fill='toself',
+            name='Objetivo Estratégico (TO-BE) [4.1/5.0]',
+            line=dict(color='#009E73', width=2, dash='dash'),
+            fillcolor='rgba(0, 158, 115, 0.15)',
+            marker=dict(size=6, symbol='diamond')
+        ))
+        
+        fig_radar.update_layout(
+            polar=dict(
+                radialaxis=dict(
+                    visible=True,
+                    range=[0, 5],
+                    tickvals=[1, 2, 3, 4, 5],
+                    ticktext=["1: Inicial", "2: Oportunista", "3: Definido", "4: Gestionado", "5: Optimizado"],
+                    tickfont=dict(size=9, color="#64748B"),
+                    gridcolor="#E2E8F0"
+                ),
+                angularaxis=dict(
+                    tickfont=dict(size=10, color="#1E293B", family="sans-serif"),
+                    rotation=90,
+                    direction="clockwise"
+                )
+            ),
+            showlegend=True,
+            legend=dict(orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5, font=dict(size=10)),
+            height=370,
+            margin=dict(l=30, r=30, t=20, b=50)
+        )
+        st.plotly_chart(fig_radar, use_container_width=True)
+
+    with col_rad2:
+        st.markdown("##### 📋 Dictamen Ejecutivo y Arquetipo Organizacional")
+        st.markdown("""
+        <div style="background-color: #F8FAFC; border-left: 4px solid #0072B2; padding: 1rem 1.2rem; border-radius: 6px; font-size: 0.88rem; line-height: 1.5; color: #1E293B;">
+            <b>Arquetipo:</b> <i>"Líder Productivo Tradicional con Asimetría Digital y Cuello de Botella Operativo"</i>.<br><br>
+            • <b>La Paradoja de Automatización:</b> La empresa destaca por su maquinaria de corte computarizado de alta precisión y calidad de catálogo (fortaleza física), pero su <i>back-office</i> y canales de atención funcionan con métodos manuales (papel, planillas dispersas y POS local aislado).<br><br>
+            • <b>El Núcleo del Problema:</b> Al no ofrecer canales de autogestión online (despieces, cotizaciones y pedidos web), toda la carga operativa recae sobre el salón de ventas y WhatsApp, generando el <b>circuito de 3 filas</b> y saturación del personal.<br><br>
+            • <b>Impacto en la Reputación:</b> Esta desarticulación informática es la causa raíz del <b>56% de quejas por mala atención</b> y <b>17% por demoras</b> detectadas en Google Maps.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div style="background-color: #FFFBEB; border: 1px solid #FDE68A; border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.6rem; font-size: 0.84rem; color: #92400E;">
+            💡 <b>Veredicto de Consultoría:</b> La transformación no requiere cambiar el modelo de negocio ni el producto —ambos sumamente valorados— sino <b>orquestar un ecosistema digital integrado (ERP + CRM + Portal B2B de Despiece + BI)</b> que elimine la fricción en el cliente y libere al personal de tareas manuales.
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # 3 Pilares del Diagnóstico Transversal
+    st.markdown("##### 📌 Pilares Clave del Diagnóstico Transversal")
+    pil1, pil2, pil3 = st.columns(3)
+    with pil1:
+        st.markdown("""
+        <div class="foda-card" style="border-top: 4px solid #E69F00; height: 100%;">
+            <b style="color: #B45309; font-size: 0.95rem;">1. Desconexión de Sistemas (Silos)</b>
+            <p style="font-size: 0.84rem; color: #334155; margin-top: 0.5rem;">
+            El software de optimización de cortes del taller no dialoga con el sistema de facturación ni con el inventario de salón. Esta fragmentación obliga a reingresar datos en papel, genera retrasos y quiebres de stock no alertados al cliente.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    with pil2:
+        st.markdown("""
+        <div class="foda-card" style="border-top: 4px solid #D55E00; height: 100%;">
+            <b style="color: #991B1B; font-size: 0.95rem;">2. Sobrecarga y Fricción Humana</b>
+            <p style="font-size: 0.84rem; color: #334155; margin-top: 0.5rem;">
+            Los vendedores atienden simultáneamente el mostrador presencial, teléfonos fijos y WhatsApp personal. La falta de automatización y CRM genera agotamiento en el equipo y un trato percibido como apurado o deficiente.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    with pil3:
+        st.markdown("""
+        <div class="foda-card" style="border-top: 4px solid #009E73; height: 100%;">
+            <b style="color: #166534; font-size: 0.95rem;">3. Potencial B2B Inexplorado</b>
+            <p style="font-size: 0.84rem; color: #334155; margin-top: 0.5rem;">
+            Los carpinteros y arquitectos (público B2B) demandan poder cotizar y mandar despieces desde su taller o smartphone 24/7. Digitalizar este flujo representaría un salto exponencial en fidelización y eficiencia de escala.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # --------------------------------------------------------------------------
+    # DETALLE POR DIMENSIÓN
+    # --------------------------------------------------------------------------
+    st.markdown("### 📊 Evaluación Detallada por Dimensión (Modelo de 6 Ejes)")
+    st.caption("Puntuación por eje basada en la escala de madurez Laudon (1: Inicial, 2: Oportunista, 3: Definido, 4: Gestionado, 5: Optimizado):")
 
     dim1, dim2, dim3 = st.columns(3)
     with dim1:
         st.markdown("""
         <div class="foda-card" style="border-top: 4px solid #0072B2;">
-            <h4 style="color: #0072B2; margin-top:0;">1. Estrategia Digital</h4>
-            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Inicial / Reactivo</b></p>
-            <p style="font-size: 0.85rem;">• Visión tradicional sin plan integral de digitalización.<br>
-            • Inversiones en tecnología acotadas a maquinaria de taller sin hoja de ruta de software.<br>
-            • Falta de KPIs digitales para monitorear canales.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="color: #0072B2; margin:0;">1. Estrategia Digital</h4>
+                <span style="background-color: #E0F2FE; color: #0369A1; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">1.5 / 5.0</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #475569; margin: 4px 0 8px 0;"><b>Nivel: Inicial / Reactivo</b></p>
+            <p style="font-size: 0.83rem; color: #334155; line-height: 1.4;">
+            • Visión orientada al oficio y comercio tradicional sin plan director de TI.<br>
+            • Inversiones en tecnología concentradas en maquinaria física sin hoja de ruta de software.<br>
+            • Inexistencia de métricas (KPIs) para evaluar canales digitales o satisfacción.
+            </p>
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
         <div class="foda-card" style="border-top: 4px solid #D55E00;">
-            <h4 style="color: #D55E00; margin-top:0;">4. Procesos</h4>
-            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Manual / Fragmentado</b></p>
-            <p style="font-size: 0.85rem;">• Circuito de venta en 3 filas sucesivas sin terminales mPOS.<br>
-            • Dependencia de papel físico (remitos/croquis) para conectar ventas con taller.<br>
-            • Gestión reactiva de compras y reposición.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="color: #D55E00; margin:0;">4. Procesos de Negocio</h4>
+                <span style="background-color: #FFEDD5; color: #C2410C; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">1.5 / 5.0</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #475569; margin: 4px 0 8px 0;"><b>Nivel: Manual / Fragmentado</b></p>
+            <p style="font-size: 0.83rem; color: #334155; line-height: 1.4;">
+            • Circuito presencial ineficiente de 3 filas sucesivas (mostrador ➔ caja ➔ entrega/taller).<br>
+            • Dependencia crítica de soporte papel (remitos, planos a mano) para pasar pedidos a taller.<br>
+            • Gestión reactiva de compras y stock sin automatización de puntos de reposición.
+            </p>
         </div>
         """, unsafe_allow_html=True)
 
     with dim2:
         st.markdown("""
         <div class="foda-card" style="border-top: 4px solid #E69F00;">
-            <h4 style="color: #E69F00; margin-top:0;">2. Tecnología e Infraestructura</h4>
-            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Silos Aislados / On-Premise</b></p>
-            <p style="font-size: 0.85rem;">• POS y facturación local sin arquitectura Cloud.<br>
-            • Desconexión entre sistema de cobro, software de corte y stock de depósito.<br>
-            • Riesgo operativo por respaldos locales sin ciberseguridad avanzada.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="color: #E69F00; margin:0;">2. Tecnología e Infra</h4>
+                <span style="background-color: #FEF3C7; color: #B45309; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">1.8 / 5.0</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #475569; margin: 4px 0 8px 0;"><b>Nivel: Silos Aislados / On-Premise</b></p>
+            <p style="font-size: 0.83rem; color: #334155; line-height: 1.4;">
+            • Facturación y POS monousuario local sin infraestructura Cloud ni redundancia.<br>
+            • Falta de interoperabilidad entre software de corte, caja y depósito.<br>
+            • Riesgo operativo por copias de seguridad locales y vulnerabilidades de continuidad.
+            </p>
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
         <div class="foda-card" style="border-top: 4px solid #009E73;">
-            <h4 style="color: #009E73; margin-top:0;">5. Personas y Cultura</h4>
-            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Tradicional / Sobrecargado</b></p>
-            <p style="font-size: 0.85rem;">• Empleados de salón saturados por tareas administrativas manuales.<br>
-            • Atención simultánea presencial y telefónica genera fricción en el trato (56% quejas).<br>
-            • Oportunidad de capacitación en servicio y herramientas digitales.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="color: #009E73; margin:0;">5. Personas y Cultura</h4>
+                <span style="background-color: #DCFCE7; color: #15803D; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">2.0 / 5.0</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #475569; margin: 4px 0 8px 0;"><b>Nivel: Tradicional / Sobrecargado</b></p>
+            <p style="font-size: 0.83rem; color: #334155; line-height: 1.4;">
+            • Alto conocimiento del oficio maderero pero cultura reacia o poco habituada a herramientas digitales.<br>
+            • Personal sobreexigido por tareas administrativas manuales y atención multicanal no asistida.<br>
+            • Necesidad prioritaria de capacitación en atención al cliente y uso de sistemas unificados.
+            </p>
         </div>
         """, unsafe_allow_html=True)
 
     with dim3:
         st.markdown("""
         <div class="foda-card" style="border-top: 4px solid #64748B;">
-            <h4 style="color: #475569; margin-top:0;">3. Datos y Analítica</h4>
-            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Básico / No Integrado</b></p>
-            <p style="font-size: 0.85rem;">• Toma de decisiones basada en intuición y planillas Excel dispersas.<br>
-            • Desaprovechamiento de datos no estructurados (reseñas, consultas WhatsApp).<br>
-            • El presente prototipo demuestra el valor de incorporar BI / Analytics.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="color: #475569; margin:0;">3. Datos y Analítica</h4>
+                <span style="background-color: #F1F5F9; color: #475569; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">1.2 / 5.0</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #475569; margin: 4px 0 8px 0;"><b>Nivel: Básico / No Integrado</b></p>
+            <p style="font-size: 0.83rem; color: #334155; line-height: 1.4;">
+            • Decisiones de abastecimiento y precios basadas en intuición y planillas Excel dispersas.<br>
+            • Datos no estructurados (reseñas de clientes, chats de WhatsApp) totalmente desaprovechados.<br>
+            • El presente proyecto demuestra el alto valor oculto en los datos para la toma de decisiones.
+            </p>
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
         <div class="foda-card" style="border-top: 4px solid #CC79A7;">
-            <h4 style="color: #CC79A7; margin-top:0;">6. Clientes y Canales</h4>
-            <p style="font-size: 0.85rem; color: #475569;"><b>Nivel: Multicanal Desarticulado</b></p>
-            <p style="font-size: 0.85rem;">• WhatsApp y líneas fijas sin CRM, chatbots ni ticketing.<br>
-            • 0% de autogestión web: carpinteros no pueden cargar despieces online.<br>
-            • 68.3% de opiniones en Google Maps sin respuesta institucional.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="color: #CC79A7; margin:0;">6. Clientes y Canales</h4>
+                <span style="background-color: #FCE7F3; color: #BE185D; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">1.6 / 5.0</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #475569; margin: 4px 0 8px 0;"><b>Nivel: Multicanal Desarticulado</b></p>
+            <p style="font-size: 0.83rem; color: #334155; line-height: 1.4;">
+            • Canales remotos (WhatsApp y teléfono) sin CRM, chatbots ni trazabilidad de estados.<br>
+            • Inexistencia de portal web transaccional o autogestión de despieces para clientes B2B.<br>
+            • 68.3% de opiniones en Google Maps sin respuesta institucional ni escucha activa.
+            </p>
         </div>
         """, unsafe_allow_html=True)
+
 
 
 
