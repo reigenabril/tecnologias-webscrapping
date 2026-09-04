@@ -14,7 +14,8 @@ from typing import Dict, List
 from playwright.sync_api import sync_playwright
 
 MAPS_URL = "https://www.google.com/maps/place/El+Emporio+del+Terciado+S.A./@-34.9105382,-57.9682882,17z/data=!4m8!3m7!1s0x95a2e7b4461a4efb:0x7afddf40c8abb97a!8m2!3d-34.9105382!4d-57.9657079!9m1!1b1!16s%2Fg%2F1tm2bvyw?hl=es"
-DEFAULT_OUTPUT_CSV = "resenas_emporio_terciado_todas.csv"
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_OUTPUT_CSV = os.path.join(PROJECT_ROOT, "data", "raw", "resenas_emporio_terciado_todas.csv")
 PROFILE_DIR = os.path.expanduser("~/.gmaps_chrome_session")
 
 

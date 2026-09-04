@@ -11,11 +11,17 @@ El dashboard interactivo se encuentra disponible publicamente en:
 
 ## Estructura del Proyecto
 
-- `app.py`: Dashboard interactivo desarrollado en Streamlit con filtros temporales, indicadores de gestion, visualizaciones y explorador de resenas.
-- `analisis_quejas.py`: Script de procesamiento de lenguaje natural y categorizacion tematica de motivos de queja.
-- `scrape_reviews.py`: Script de extraccion automatizada de resenas publicas utilizando Playwright.
-- `resenas_categorizadas.csv`: Dataset procesado con clasificacion tematica y año estimado.
-- `grafico_top_quejas.png`: Grafico de distribucion de las principales categorias de reclamos.
+- `app.py`: Dashboard interactivo principal en Streamlit con filtros temporales, diagnóstico de madurez digital, análisis FODA y explorador de reseñas.
+- `data/`:
+  - `resenas_categorizadas.csv`: Dataset principal consolidado y procesado con clasificación temática, sucursal y año estimado (1.332 reseñas).
+  - `raw/`: Datasets crudos originales extraídos por sucursal (Casa Central, Egger Haus, Centenario).
+- `docs/`:
+  - `Entrega_1_Diagnostico_Digital_El_Emporio_del_Terciado.pdf`: Informe académico completo de la Entrega 1.
+- `scripts/`:
+  - `analisis_quejas.py`: Script de procesamiento y categorización temática de quejas.
+  - `scrape_reviews.py`: Script de extracción automatizada de reseñas utilizando Playwright.
+- `requirements.txt`: Dependencias esenciales para el despliegue del dashboard en Streamlit Cloud.
+- `requirements-dev.txt`: Dependencias adicionales para tareas de scraping y desarrollo local.
 
 ## Requisitos e Instalacion Local
 

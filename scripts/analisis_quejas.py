@@ -10,10 +10,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CSV_INPUT = os.path.join(BASE_DIR, "resenas_emporio_terciado_3_o_menos.csv")
-CSV_OUTPUT = os.path.join(BASE_DIR, "resenas_categorizadas.csv")
-IMG_OUTPUT = os.path.join(BASE_DIR, "grafico_top_quejas.png")
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+CSV_INPUT = os.path.join(PROJECT_ROOT, "data", "resenas_categorizadas.csv")
+CSV_OUTPUT = os.path.join(PROJECT_ROOT, "data", "resenas_categorizadas.csv")
+IMG_OUTPUT = os.path.join(PROJECT_ROOT, "docs", "grafico_top_quejas.png")
 
 CATEGORIAS = {
     "Atención y Trato del Personal": [

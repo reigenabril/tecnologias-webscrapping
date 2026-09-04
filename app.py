@@ -21,8 +21,10 @@ st.set_page_config(
 
 # Rutas dinámicas
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CSV_CATEGORIZADAS = os.path.join(BASE_DIR, "resenas_categorizadas.csv")
-CSV_ORIGINAL = os.path.join(BASE_DIR, "resenas_emporio_terciado_3_o_menos.csv")
+CSV_DATA_PATHS = [
+    os.path.join(BASE_DIR, "data", "resenas_categorizadas.csv"),
+    os.path.join(BASE_DIR, "resenas_categorizadas.csv"),
+]
 
 # Paleta accesible Okabe-Ito y jerarquía visual
 COLOR_1_STAR = "#0072B2"  # Azul profundo
@@ -133,12 +135,9 @@ def parse_year(fecha_str: str, current_year: int = 2026) -> int:
 
 @st.cache_data
 def load_data():
-    if os.path.exists(CSV_CATEGORIZADAS):
-        df = pd.read_csv(CSV_CATEGORIZADAS)
-    elif os.path.exists(os.path.join(BASE_DIR, "resenas_unificadas.csv")):
-        df = pd.read_csv(os.path.join(BASE_DIR, "resenas_unificadas.csv"))
-    elif os.path.exists(CSV_ORIGINAL):
-        df = pd.read_csv(CSV_ORIGINAL)
+    csv_file = next((p for p in CSV_DATA_PATHS if os.path.exists(p)), None)
+    if csv_file:
+        df = pd.read_csv(csv_file)
     else:
         st.error("No se encontró el archivo de datos CSV.")
         return pd.DataFrame()
