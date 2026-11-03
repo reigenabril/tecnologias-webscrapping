@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Diagnóstico Digital — El Emporio del Terciado</title>
-  <meta name="description" content="Dashboard de diagnóstico digital y análisis de experiencia del cliente de El Emporio del Terciado S.A. a partir de 1.075 reseñas públicas de Google Maps. Tecnologías para la Gestión, FCE UNLP.">
+  <title>Resumen ejecutivo — El Emporio del Terciado</title>
+  <meta name="description" content="Resumen ejecutivo del diagnóstico digital de El Emporio del Terciado S.A.: satisfacción, temas críticos y conclusiones a partir de 1.075 reseñas públicas de Google Maps. Tecnologías para la Gestión, FCE UNLP.">
   <meta name="theme-color" content="#0072B2">
-  <meta property="og:title" content="Diagnóstico Digital — El Emporio del Terciado">
-  <meta property="og:description" content="Auditoría de sistemas, procesos y madurez digital a partir de 1.075 reseñas de Google Maps.">
+  <meta property="og:title" content="Resumen ejecutivo — El Emporio del Terciado">
+  <meta property="og:description" content="Satisfacción, evolución y conclusiones del análisis de 1.075 reseñas de Google Maps.">
   <meta property="og:type" content="website">
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./assets/styles.css">
+  <link rel="stylesheet" href="./assets/styles.css?v=3">
   <script defer src="./assets/vendor/plotly-3.1.0.min.js"></script>
-  <script defer src="./assets/metrics.js"></script>
-  <script defer src="./assets/app.js"></script>
+  <script defer src="./assets/metrics.js?v=3"></script>
+  <script defer src="./assets/app.js?v=3"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Saltar al contenido</a>
@@ -33,6 +33,7 @@
       </div>
 
       <nav class="nav" aria-label="Secciones">
+        <a href="#resumen" data-route="resumen">Resumen ejecutivo</a>
         <a href="#diagnostico" data-route="diagnostico">1. Presentación &amp; Diagnóstico</a>
         <a href="#evidencia" data-route="evidencia">2. Evidencia Empírica</a>
         <a href="#procesos" data-route="procesos">3. Mapeo de Procesos AS-IS</a>
@@ -105,13 +106,125 @@
     <div class="content">
       <header class="topbar">
         <button type="button" class="icon-btn" id="btn-menu" aria-controls="sidebar" aria-expanded="false">☰ Menú</button>
-        <span class="topbar-title" id="topbar-title">Diagnóstico Digital</span>
+        <span class="topbar-title" id="topbar-title">Resumen ejecutivo</span>
         <button type="button" class="icon-btn" id="btn-filters">Filtros</button>
       </header>
 
       <main id="main">
+        <!-- ================= 0. RESUMEN EJECUTIVO ================= -->
+        <section class="page" id="resumen" data-page="resumen">
+          <header class="page-head summary-head">
+            <p class="eyebrow">Conclusiones del diagnóstico</p>
+            <h1>Lo que dicen las <span data-bind="sum-total">1.075</span> reseñas</h1>
+            <p class="lead">Síntesis gráfica de la experiencia del cliente en las tres sucursales: satisfacción, puntos de dolor y oportunidades de transformación digital.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#diagnostico">Ver diagnóstico completo</a>
+              <a class="btn" href="#resenas">Explorar reseñas</a>
+              <a class="btn btn-ghost" href="./Entrega_1_Diagnostico_Digital_El_Emporio_del_Terciado.pdf" download>Informe PDF</a>
+            </div>
+            <div class="summary-chips">
+              <span class="chip"><span data-bind="sum-total">1.075</span> reseñas analizadas</span>
+              <span class="chip"><span data-bind="sum-sucursales">3</span> sucursales</span>
+              <span class="chip">2016 – 2026</span>
+            </div>
+          </header>
+
+          <div class="summary-top">
+            <div class="card summary-donut">
+              <div class="card-head">
+                <h2>Satisfacción general</h2>
+                <span class="badge">Universo completo</span>
+              </div>
+              <div class="chart chart-donut" id="chart-sum-satisfaction" role="img" aria-label="Dona de satisfacción: 817 reseñas positivas y 258 críticas sobre 1.075."></div>
+              <p class="chart-caption"><b data-bind="sum-pos">817</b> positivas (⭐4-5) · <b data-bind="sum-neg">258</b> críticas (⭐1-3)</p>
+            </div>
+
+            <div class="summary-kpis">
+              <div class="kpi-card">
+                <span class="kpi-value" data-bind="sum-sucursales">3</span>
+                <span class="kpi-label">sucursales analizadas</span>
+              </div>
+              <div class="kpi-card">
+                <span class="kpi-value" data-bind="sum-text">608</span>
+                <span class="kpi-label">opiniones con texto (<span data-bind="sum-pct-text">56.6%</span>)</span>
+              </div>
+              <div class="kpi-card">
+                <span class="kpi-value" data-bind="sum-responses">307</span>
+                <span class="kpi-label">respuestas del comercio (<span data-bind="sum-pct-response">28.6%</span>)</span>
+              </div>
+              <div class="kpi-card accent-red">
+                <span class="kpi-value" data-bind="sum-neg-noresp">70.9%</span>
+                <span class="kpi-label">de las negativas sin respuesta (<span data-bind="sum-neg-noresp-count">183</span> de <span data-bind="sum-neg">258</span>)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card summary-wide">
+            <div class="card-head">
+              <h2>Evolución anual de las reseñas</h2>
+              <span class="badge">2016 – 2026</span>
+            </div>
+            <div class="chart chart-yearly" id="chart-sum-yearly" role="img" aria-label="Evolución anual: barras con la cantidad de reseñas y línea con el promedio de estrellas."></div>
+            <p class="chart-caption">Volumen anual y calificación promedio. 2017 no registra reseñas.</p>
+          </div>
+
+          <div class="grid grid-2 summary-grid">
+            <div class="card">
+              <div class="card-head">
+                <h2>Temas que más aparecen</h2>
+                <span class="badge">608 textos</span>
+              </div>
+              <div class="chart chart-topics" id="chart-sum-topics" role="img" aria-label="Barras de menciones por categoría temática."></div>
+              <p class="chart-caption">Sobre las 608 opiniones con comentario escrito.</p>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <h2>Positivas vs críticas por sucursal</h2>
+                <span class="badge">3 locales</span>
+              </div>
+              <div class="chart chart-branches" id="chart-sum-branches" role="img" aria-label="Barras apiladas de reseñas positivas y críticas por sucursal."></div>
+              <p class="chart-caption">Casa Central concentra el 76.4% de las reseñas críticas (197 de 258).</p>
+            </div>
+          </div>
+
+          <h2 class="section-title">Conclusiones</h2>
+          <div class="grid grid-2 conclusions">
+            <article class="conclusion-card conclusion-green">
+              <span class="conclusion-number">76%</span>
+              <h3>El producto convence</h3>
+              <p><b data-bind="sum-pos">817</b> de <span data-bind="sum-total">1.075</span> reseñas son de 4–5★ y el promedio es <span data-bind="sum-avg">4.07</span>. El catálogo, la variedad y el taller de corte sostienen la reputación.</p>
+              <a class="conclusion-link" href="#evidencia">Ver la evidencia →</a>
+            </article>
+            <article class="conclusion-card conclusion-blue">
+              <span class="conclusion-number">258</span>
+              <h3>La experiencia es el punto débil</h3>
+              <p>El 24% de las reseñas son críticas. La atención, las demoras y los canales remotos concentran el descontento.</p>
+              <a class="conclusion-link" href="#evidencia">Ver los temas →</a>
+            </article>
+            <article class="conclusion-card conclusion-amber">
+              <span class="conclusion-number">70.9%</span>
+              <h3>La reputación online está desatendida</h3>
+              <p><b data-bind="sum-neg-noresp-count">183</b> de las <span data-bind="sum-neg">258</span> reseñas negativas no tienen respuesta. Solo el 28.6% de todas las reseñas recibió respuesta del comercio.</p>
+              <a class="conclusion-link" href="#foda">Ver el FODA →</a>
+            </article>
+            <article class="conclusion-card conclusion-slate">
+              <span class="conclusion-number">3 filas</span>
+              <h3>La fricción es operativa</h3>
+              <p>Venta → caja → entrega, sin portal B2B. La oportunidad es integrar ERP + CRM + autogestión de despieces.</p>
+              <a class="conclusion-link" href="#procesos">Ver los procesos →</a>
+            </article>
+          </div>
+
+          <div class="callout callout-verdict">
+            <p><b>Veredicto:</b> no hace falta cambiar el producto ni el modelo de negocio; hace falta <b>orquestar el ecosistema digital</b> (ERP + CRM + portal B2B + BI) para eliminar la fricción y liberar al equipo.</p>
+            <a class="btn btn-primary" href="#hoja-de-ruta">Ver la hoja de ruta</a>
+          </div>
+
+          <p class="summary-note">Universo completo: 1.075 reseñas públicas de Google Maps (1–5★) de las 3 sucursales, 2016–2026. La categorización temática se calculó sobre las 608 opiniones con texto. Los filtros del panel aplican a Evidencia y Explorador.</p>
+        </section>
+
         <!-- ================= 1. PRESENTACIÓN ================= -->
-        <section class="page" id="diagnostico" data-page="diagnostico">
+        <section class="page" id="diagnostico" data-page="diagnostico" hidden>
           <header class="page-head hero">
             <p class="eyebrow">Tecnologías para la Gestión · FCE UNLP</p>
             <h1>Entrega 1: Diagnóstico Digital y Análisis Estratégico</h1>

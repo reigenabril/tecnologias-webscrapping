@@ -20,7 +20,7 @@ Sitio publicado con GitHub Pages:
 
 ```
 docs/                     # sitio publicado por GitHub Pages
-├── index.html            # las 6 secciones del dashboard
+├── index.html            # resumen ejecutivo + 6 secciones del dashboard
 ├── assets/
 │   ├── styles.css        # diseño responsive e impresión
 │   ├── metrics.js        # filtros y agregaciones (sin DOM)
@@ -64,7 +64,7 @@ El script valida el esquema, normaliza los valores faltantes e imprime los conte
 node --test tests/metrics.test.js
 ```
 
-Verifican la paridad numérica del dashboard (totales, promedios, filtros, FODA y export CSV).
+Verifican la paridad numérica del dashboard (totales, promedios, filtros, evolución anual, FODA y export CSV).
 
 ## Scraping y análisis (opcional)
 

@@ -143,6 +143,31 @@
       .sort((a, b) => a.year - b.year || a.stars - b.stars);
   }
 
+  function yearly(rows) {
+    const map = new Map();
+    rows.forEach((r) => {
+      if (!map.has(r.anio_estimado)) {
+        map.set(r.anio_estimado, {
+          year: r.anio_estimado,
+          count: 0,
+          sum: 0,
+          pos: 0,
+        });
+      }
+      const item = map.get(r.anio_estimado);
+      item.count += 1;
+      item.sum += r.estrellas;
+      if (r.estrellas >= 4) item.pos += 1;
+    });
+    return Array.from(map.values())
+      .sort((a, b) => a.year - b.year)
+      .map((item) => ({
+        ...item,
+        avg: item.count ? item.sum / item.count : 0,
+        pctPos: item.count ? (item.pos / item.count) * 100 : 0,
+      }));
+  }
+
   function fodaCounts(periodRows) {
     const pos = periodRows.filter((r) => r.estrellas >= 4);
     const neg = periodRows.filter((r) => r.estrellas <= 3);
@@ -214,6 +239,7 @@
     stars,
     sucursalSummary,
     temporal,
+    yearly,
     fodaCounts,
     search,
     toCsv,

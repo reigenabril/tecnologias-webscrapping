@@ -9,6 +9,7 @@
   const PAGE_SIZE = 50;
   const ALL_SUCURSALES = "Todas las sucursales";
   const ROUTES = [
+    "resumen",
     "diagnostico",
     "evidencia",
     "procesos",
@@ -17,6 +18,7 @@
     "hoja-de-ruta",
   ];
   const ROUTE_TITLES = {
+    resumen: "Resumen ejecutivo",
     diagnostico: "Diagnóstico Digital",
     evidencia: "Evidencia Empírica",
     procesos: "Procesos AS-IS",
@@ -72,7 +74,8 @@
   let categories = [];
   let sucursales = [];
   let cache = {};
-  let currentRoute = "diagnostico";
+  let summary = null;
+  let currentRoute = "resumen";
   let selectedEvidenceTab = 0;
   let lastFocused = null;
   let closeNav = function () {};
@@ -104,6 +107,8 @@
         validate(data);
         payload = data;
         hydrateControls();
+        summary = buildSummary(payload.rows);
+        renderSummary();
         bindControls();
         refresh();
         showRoute(routeFromHash());
@@ -173,6 +178,48 @@
       text.textContent = category;
       label.append(input, text);
       categoriesBox.appendChild(label);
+    });
+  }
+
+  function buildSummary(rows) {
+    const negative = rows.filter((r) => r.estrellas <= 3);
+    return {
+      overview: M.overview(rows),
+      balance: M.balance(rows),
+      nlp: M.nlp(rows.filter(M.hasText)),
+      sucursal: M.sucursalSummary(rows),
+      yearly: M.yearly(rows),
+      negTotal: negative.length,
+      negResponses: negative.filter(M.hasResponse).length,
+    };
+  }
+
+  function renderSummary() {
+    if (!summary) return;
+    const overview = summary.overview;
+    const balance = summary.balance;
+    const negNoResponse = summary.negTotal - summary.negResponses;
+    const values = {
+      "sum-total": fmtInt(overview.total),
+      "sum-avg": two(overview.avg),
+      "sum-pos": fmtInt(balance.pos),
+      "sum-neg": fmtInt(balance.neg),
+      "sum-text": fmtInt(overview.withText),
+      "sum-pct-text": one(overview.pctText),
+      "sum-responses": fmtInt(overview.withResponse),
+      "sum-pct-response": one(overview.pctResponse),
+      "sum-sucursales": String(sucursales.length),
+      "sum-neg-noresp": one(
+        summary.negTotal ? (negNoResponse / summary.negTotal) * 100 : 0
+      ),
+      "sum-neg-noresp-count": fmtInt(negNoResponse),
+    };
+
+    $$('[data-bind^="sum-"]').forEach((element) => {
+      const key = element.getAttribute("data-bind");
+      if (Object.prototype.hasOwnProperty.call(values, key)) {
+        element.textContent = values[key];
+      }
     });
   }
 
@@ -500,7 +547,7 @@
 
   function routeFromHash() {
     const route = window.location.hash.replace(/^#\/?/, "");
-    return ROUTES.includes(route) ? route : "diagnostico";
+    return ROUTES.includes(route) ? route : "resumen";
   }
 
   function showRoute(route) {
@@ -518,7 +565,9 @@
     window.scrollTo(0, 0);
     closeNav();
 
-    if (route === "diagnostico") {
+    if (route === "resumen") {
+      requestAnimationFrame(plotSummary);
+    } else if (route === "diagnostico") {
       requestAnimationFrame(plotRadar);
     } else if (route === "evidencia" && cache.filtered) {
       requestAnimationFrame(() => plotEvidenceTab(selectedEvidenceTab));
@@ -674,6 +723,278 @@
     paragraph.className = "chart-empty";
     paragraph.textContent = message;
     element.replaceChildren(paragraph);
+  }
+
+  /* ---------------- Resumen ejecutivo ---------------- */
+
+  function plotSummary() {
+    if (!summary) return;
+    plotSumSatisfaction();
+    plotSumYearly();
+    plotSumTopics();
+    plotSumBranches();
+  }
+
+  function plotSumSatisfaction() {
+    const element = $("#chart-sum-satisfaction");
+    if (!element) return;
+    const balance = summary.balance;
+
+    plot(
+      element,
+      [
+        {
+          type: "pie",
+          labels: ["Positivas (4-5★)", "Críticas (1-3★)"],
+          values: [balance.pos, balance.neg],
+          hole: 0.62,
+          sort: false,
+          direction: "clockwise",
+          marker: {
+            colors: ["#009E73", "#0072B2"],
+            line: { color: "#FFFFFF", width: 3 },
+          },
+          text: [
+            `${one(balance.pctPos)}<br>positivas`,
+            `${one(balance.pctNeg)}<br>críticas`,
+          ],
+          textinfo: "text",
+          insidetextorientation: "horizontal",
+          textfont: { size: 12, color: "#FFFFFF" },
+          hovertemplate: "%{label}: %{value} reseñas<extra></extra>",
+        },
+      ],
+      {
+        height: 380,
+        margin: { l: 10, r: 10, t: 10, b: 10 },
+        showlegend: false,
+        annotations: [
+          {
+            text: `<b>${fmtInt(balance.total)}</b>`,
+            x: 0.5,
+            y: 0.57,
+            xref: "paper",
+            yref: "paper",
+            showarrow: false,
+            font: { size: 31, color: "#0F172A" },
+          },
+          {
+            text: "reseñas analizadas",
+            x: 0.5,
+            y: 0.475,
+            xref: "paper",
+            yref: "paper",
+            showarrow: false,
+            font: { size: 11, color: "#64748B" },
+          },
+          {
+            text: `<b>${two(summary.overview.avg)} ★</b> promedio`,
+            x: 0.5,
+            y: 0.375,
+            xref: "paper",
+            yref: "paper",
+            showarrow: false,
+            font: { size: 12, color: "#1E293B" },
+          },
+        ],
+      }
+    );
+  }
+
+  function plotSumYearly() {
+    const element = $("#chart-sum-yearly");
+    if (!element) return;
+    const items = summary.yearly;
+    if (!items.length) {
+      showChartMessage(element, "Sin datos anuales.");
+      return;
+    }
+
+    const byYear = new Map(items.map((item) => [item.year, item]));
+    const yearsList = [];
+    for (let year = items[0].year; year <= items[items.length - 1].year; year += 1) {
+      yearsList.push(year);
+    }
+    const counts = yearsList.map((year) =>
+      byYear.has(year) ? byYear.get(year).count : 0
+    );
+    const averages = yearsList.map((year) =>
+      byYear.has(year) ? byYear.get(year).avg : null
+    );
+
+    plot(
+      element,
+      [
+        {
+          type: "bar",
+          name: "Reseñas",
+          x: yearsList,
+          y: counts,
+          marker: { color: "#56B4E9" },
+          opacity: 0.55,
+          hovertemplate: "%{x}: %{y} reseñas<extra></extra>",
+        },
+        {
+          type: "scatter",
+          mode: "lines+markers",
+          name: "Promedio ★",
+          x: yearsList,
+          y: averages,
+          yaxis: "y2",
+          line: { color: "#E69F00", width: 3 },
+          marker: { color: "#E69F00", size: 7 },
+          connectgaps: false,
+          hovertemplate: "%{x}: %{y:.2f} ★<extra></extra>",
+        },
+      ],
+      {
+        height: 360,
+        margin: { l: 55, r: 65, t: 15, b: 55 },
+        xaxis: {
+          dtick: window.innerWidth < 1100 ? 2 : 1,
+          title: { text: "Año", font: { size: 11 } },
+          gridcolor: "#E2E8F0",
+          tickfont: { size: 10 },
+        },
+        yaxis: {
+          title: { text: "Reseñas", font: { size: 11 } },
+          gridcolor: "#E2E8F0",
+          zeroline: false,
+          rangemode: "tozero",
+        },
+        yaxis2: {
+          title: { text: "Promedio ★", font: { size: 11 } },
+          overlaying: "y",
+          side: "right",
+          range: [0, 5],
+          tickvals: [0, 1, 2, 3, 4, 5],
+          showgrid: false,
+          zeroline: false,
+        },
+        legend: {
+          orientation: "h",
+          y: -0.22,
+          x: 0.5,
+          xanchor: "center",
+          font: { size: 10 },
+        },
+        bargap: 0.3,
+        hovermode: "x unified",
+      }
+    );
+  }
+
+  function plotSumTopics() {
+    const element = $("#chart-sum-topics");
+    if (!element) return;
+    if (!summary.nlp.length) {
+      showChartMessage(element, "Sin comentarios de texto.");
+      return;
+    }
+
+    const items = summary.nlp;
+    const ranked = [...items].sort((a, b) => b.count - a.count);
+    const colorByLabel = new Map(
+      ranked.map((item, index) => [
+        item.label,
+        PALETTE[Math.min(index, PALETTE.length - 1)],
+      ])
+    );
+
+    plot(
+      element,
+      [
+        {
+          type: "bar",
+          orientation: "h",
+          x: items.map((item) => item.count),
+          y: items.map((item) => item.label),
+          text: items.map((item) => `${fmtInt(item.count)} (${one(item.pct)})`),
+          textposition: "outside",
+          cliponaxis: false,
+          marker: { color: items.map((item) => colorByLabel.get(item.label)) },
+          hovertemplate: "%{y}: %{x} menciones<extra></extra>",
+        },
+      ],
+      {
+        height: 380,
+        margin: { l: 10, r: 60, t: 5, b: 40 },
+        xaxis: {
+          title: { text: "Menciones", font: { size: 11 } },
+          gridcolor: "#E2E8F0",
+          zeroline: false,
+        },
+        yaxis: { automargin: true, tickfont: { size: 10 } },
+        bargap: 0.3,
+        showlegend: false,
+      }
+    );
+  }
+
+  function plotSumBranches() {
+    const element = $("#chart-sum-branches");
+    if (!element) return;
+    if (!summary.sucursal.length) {
+      showChartMessage(element, "Sin datos de sucursales.");
+      return;
+    }
+
+    const items = [...summary.sucursal].reverse();
+    const names = items.map((item) => SHORT_SUCURSAL[item.name] || item.name);
+    const positives = items.map((item) => item.total - item.neg);
+    const negatives = items.map((item) => item.neg);
+
+    plot(
+      element,
+      [
+        {
+          type: "bar",
+          orientation: "h",
+          name: "Positivas (4-5★)",
+          y: names,
+          x: positives,
+          marker: { color: "#009E73" },
+          text: positives.map(fmtInt),
+          textposition: "inside",
+          insidetextanchor: "middle",
+          textfont: { color: "#FFFFFF", size: 10 },
+          hovertemplate: "%{y}: %{x} positivas<extra></extra>",
+        },
+        {
+          type: "bar",
+          orientation: "h",
+          name: "Críticas (1-3★)",
+          y: names,
+          x: negatives,
+          marker: { color: "#0072B2" },
+          text: negatives.map(fmtInt),
+          textposition: "inside",
+          insidetextanchor: "middle",
+          textfont: { color: "#FFFFFF", size: 10 },
+          hovertemplate: "%{y}: %{x} críticas<extra></extra>",
+        },
+      ],
+      {
+        height: 280,
+        barmode: "stack",
+        margin: { l: 10, r: 20, t: 10, b: 55 },
+        xaxis: {
+          title: { text: "Reseñas", font: { size: 11 } },
+          gridcolor: "#E2E8F0",
+          zeroline: false,
+        },
+        yaxis: { automargin: true, tickfont: { size: 11 } },
+        legend: {
+          orientation: "h",
+          y: -0.28,
+          x: 0.5,
+          xanchor: "center",
+          font: { size: 10 },
+        },
+        bargap: 0.35,
+        showlegend: true,
+      }
+    );
   }
 
   function plotRadar() {

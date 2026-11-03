@@ -142,6 +142,26 @@ test("temporal: suma total y años", () => {
   assert.equal(new Set(points.map((p) => p.year)).size, 10);
 });
 
+test("yearly: volumen y promedio por año", () => {
+  const points = M.yearly(M.filterAll(rows, defaults));
+  assert.equal(points.length, 10);
+  assert.equal(
+    points.reduce((acc, p) => acc + p.count, 0),
+    1075
+  );
+  const y2019 = points.find((p) => p.year === 2019);
+  assert.equal(y2019.count, 319);
+  assert.equal(round(y2019.avg, 2), 3.92);
+  assert.equal(round(y2019.pctPos, 1), 72.4);
+  const y2024 = points.find((p) => p.year === 2024);
+  assert.equal(y2024.count, 94);
+  assert.equal(round(y2024.avg, 2), 4.49);
+  assert.equal(round(y2024.pctPos, 1), 87.2);
+  assert.equal(points.find((p) => p.year === 2026).count, 164);
+  assert.equal(points.find((p) => p.year === 2017), undefined);
+  assert.deepEqual(M.yearly([]), []);
+});
+
 test("FODA: conteos del período por defecto", () => {
   const f = M.fodaCounts(M.filterPeriod(rows, defaults));
   assert.equal(f.pos, 817);
