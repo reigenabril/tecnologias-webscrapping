@@ -1,37 +1,87 @@
-# Analisis de Puntos de Dolor y Experiencia del Cliente
+# Diagnóstico Digital — El Emporio del Terciado
 
-Este proyecto fue desarrollado para la materia **Tecnologias para la Gestion**. El objetivo es analizar la experiencia de usuario y detectar los principales puntos de dolor (pain points) operativos y de atencion en una empresa comercial del sector minorista de materiales y construccion, a partir de sus resenas publicas en Google Maps.
+Dashboard web para el análisis de experiencia del cliente y el diagnóstico digital de **El Emporio del Terciado S.A.**, a partir de **1.075 reseñas públicas de Google Maps**.
 
-## Aplicacion Desplegada
+Materia: **Tecnologías para la Gestión** (FCE – UNLP).
 
-El dashboard interactivo se encuentra disponible publicamente en:
-- **Enlace de la aplicacion:** [https://tecnologias-webscrapping.streamlit.app](https://tecnologias-webscrapping.streamlit.app)
+## Demo
 
-## Requisitos e Instalacion Local
+Sitio publicado con GitHub Pages:
 
-1. Clonar el repositorio:
-   ```bash
-   git clone https://github.com/reigenabril/tecnologias-webscrapping.git
-   cd tecnologias-webscrapping
-   ```
+**https://reigenabril.github.io/tecnologias-webscrapping/**
 
-2. Crear y activar un entorno virtual:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
+## Stack
 
-3. Instalar las dependencias:
-   ```bash
-   pip install -r requirements.txt
-   ```
+- HTML, CSS y JavaScript, sin build ni framework.
+- [Plotly.js](https://plotly.com/javascript/) (vendorizado) para los gráficos.
+- pandas para generar el JSON de datos desde el CSV.
 
-## Ejecucion Local del Dashboard
+## Estructura
 
-Para iniciar la aplicacion de forma local:
-
-```bash
-streamlit run app.py
+```
+docs/                     # sitio publicado por GitHub Pages
+├── index.html            # las 6 secciones del dashboard
+├── assets/
+│   ├── styles.css        # diseño responsive e impresión
+│   ├── metrics.js        # filtros y agregaciones (sin DOM)
+│   ├── app.js            # router, controles y gráficos
+│   ├── favicon.svg
+│   └── vendor/           # Plotly.js y su licencia
+├── data/resenas.json     # dataset generado desde el CSV
+└── Entrega_1_...pdf      # informe de la entrega
+data/                     # dataset fuente (CSV)
+scripts/                  # scraping, análisis y build del JSON
+tests/                    # tests de paridad numérica
 ```
 
-La aplicacion estara disponible en `http://localhost:8501`.
+## Desarrollo local
+
+```bash
+python3 -m http.server 8000 --directory docs
+# abrir http://localhost:8000
+```
+
+No abras `docs/index.html` con `file://`: el navegador bloquea el `fetch` del JSON.
+
+## Datos
+
+`data/resenas_categorizadas.csv` es la fuente de verdad (1.075 filas × 17 columnas).
+
+Para regenerar el JSON que consume el sitio:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python3 scripts/build_site_data.py
+```
+
+El script valida el esquema, normaliza los valores faltantes e imprime los conteos de control.
+
+## Tests
+
+```bash
+node --test tests/metrics.test.js
+```
+
+Verifican la paridad numérica del dashboard (totales, promedios, filtros, FODA y export CSV).
+
+## Scraping y análisis (opcional)
+
+```bash
+pip install -r requirements-dev.txt
+python3 scripts/scrape_reviews.py
+python3 scripts/analisis_quejas.py
+```
+
+## Deploy
+
+GitHub Pages: **Settings → Pages → Deploy from a branch → Branch `main` / carpeta `/docs`**.
+
+Alternativa Vercel: importar el repositorio, configurar **Root Directory** en `docs`, framework “Other” y sin build.
+
+## Créditos
+
+Trabajo Práctico Integrador — Tecnologías para la Gestión, FCE UNLP.
+
+Caso de estudio: El Emporio del Terciado S.A. (La Plata).

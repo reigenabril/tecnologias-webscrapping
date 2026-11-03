@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Diagnóstico Digital — El Emporio del Terciado</title>
+  <meta name="description" content="Dashboard de diagnóstico digital y análisis de experiencia del cliente de El Emporio del Terciado S.A. a partir de 1.075 reseñas públicas de Google Maps. Tecnologías para la Gestión, FCE UNLP.">
+  <meta name="theme-color" content="#0072B2">
+  <meta property="og:title" content="Diagnóstico Digital — El Emporio del Terciado">
+  <meta property="og:description" content="Auditoría de sistemas, procesos y madurez digital a partir de 1.075 reseñas de Google Maps.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script defer src="./assets/vendor/plotly-3.1.0.min.js"></script>
+  <script defer src="./assets/metrics.js"></script>
+  <script defer src="./assets/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Navegación y filtros">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">ET</span>
+        <span class="brand-text">
+          <span class="brand-title">El Emporio del Terciado</span>
+          <span class="brand-sub">Diagnóstico digital · Entrega 1</span>
+        </span>
+        <button type="button" class="icon-btn drawer-close" id="btn-close" aria-label="Cerrar menú">✕</button>
+      </div>
+
+      <nav class="nav" aria-label="Secciones">
+        <a href="#diagnostico" data-route="diagnostico">1. Presentación &amp; Diagnóstico</a>
+        <a href="#evidencia" data-route="evidencia">2. Evidencia Empírica</a>
+        <a href="#procesos" data-route="procesos">3. Mapeo de Procesos AS-IS</a>
+        <a href="#foda" data-route="foda">4. Matriz FODA Estratégica</a>
+        <a href="#resenas" data-route="resenas">5. Explorador de Reseñas</a>
+        <a href="#hoja-de-ruta" data-route="hoja-de-ruta">6. Hoja de Ruta</a>
+      </nav>
+
+      <div class="filters">
+        <h2 class="filters-title">⚙️ Filtros de análisis</h2>
+        <p class="hint">Aplican a Evidencia y Explorador.</p>
+
+        <div class="field">
+          <label for="f-sucursal">Sucursal</label>
+          <select id="f-sucursal"></select>
+        </div>
+
+        <fieldset class="field">
+          <legend>Período de análisis</legend>
+          <div class="field-row">
+            <label class="mini-label" for="f-year-from">Desde
+              <select id="f-year-from"></select>
+            </label>
+            <label class="mini-label" for="f-year-to">Hasta
+              <select id="f-year-to"></select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>Calificación</legend>
+          <div class="chips" id="f-stars">
+            <label><input type="checkbox" value="1" checked> 1 ★</label>
+            <label><input type="checkbox" value="2" checked> 2 ★</label>
+            <label><input type="checkbox" value="3" checked> 3 ★</label>
+            <label><input type="checkbox" value="4" checked> 4 ★</label>
+            <label><input type="checkbox" value="5" checked> 5 ★</label>
+          </div>
+          <p class="hint" id="stars-hint" hidden>Sin calificaciones seleccionadas: no hay resultados.</p>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>Categoría de queja / opinión</legend>
+          <div class="cat-actions">
+            <button type="button" class="link-btn" id="cats-all">Todas</button>
+            <button type="button" class="link-btn" id="cats-none">Ninguna</button>
+          </div>
+          <div class="checks" id="f-cats"></div>
+          <p class="hint" id="cats-hint" hidden>Sin categorías seleccionadas: se muestran todas.</p>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>Respuesta institucional</legend>
+          <label class="radio"><input type="radio" name="f-response" value="Todas" checked> Todas</label>
+          <label class="radio"><input type="radio" name="f-response" value="Solo con respuesta"> Solo con respuesta</label>
+          <label class="radio"><input type="radio" name="f-response" value="Sin respuesta"> Sin respuesta</label>
+        </fieldset>
+
+        <button type="button" class="btn btn-ghost btn-block" id="f-reset">Restablecer filtros</button>
+      </div>
+
+      <div class="sidebar-footer">
+        <a class="btn btn-primary btn-block" href="./Entrega_1_Diagnostico_Digital_El_Emporio_del_Terciado.pdf" download>📄 Descargar informe (PDF)</a>
+        <a class="muted-link" href="https://github.com/reigenabril/tecnologias-webscrapping" target="_blank" rel="noopener">Ver repositorio en GitHub</a>
+      </div>
+    </aside>
+
+    <div class="overlay" id="overlay" hidden></div>
+
+    <div class="content">
+      <header class="topbar">
+        <button type="button" class="icon-btn" id="btn-menu" aria-controls="sidebar" aria-expanded="false">☰ Menú</button>
+        <span class="topbar-title" id="topbar-title">Diagnóstico Digital</span>
+        <button type="button" class="icon-btn" id="btn-filters">Filtros</button>
+      </header>
+
+      <main id="main">
+        <!-- ================= 1. PRESENTACIÓN ================= -->
+        <section class="page" id="diagnostico" data-page="diagnostico">
+          <header class="page-head hero">
+            <p class="eyebrow">Tecnologías para la Gestión · FCE UNLP</p>
+            <h1>Entrega 1: Diagnóstico Digital y Análisis Estratégico</h1>
+            <p class="lead">Auditoría Integral de Sistemas de Información, Procesos de Negocio y Madurez Digital</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="./Entrega_1_Diagnostico_Digital_El_Emporio_del_Terciado.pdf" download>Descargar informe (PDF)</a>
+              <span class="chip">1.075 reseñas analizadas</span>
+              <span class="chip">3 sucursales</span>
+            </div>
+          </header>
+
+          <div class="grid grid-3 meta-grid">
+            <div class="card meta-card">
+              <p><span class="meta-label">Organización cliente</span><strong>El Emporio del Terciado S.A.</strong></p>
+              <p><span class="meta-label">Ubicación</span>La Plata, Prov. de Buenos Aires</p>
+            </div>
+            <div class="card meta-card">
+              <p><span class="meta-label">Fundación</span><strong>1962 (64 años de trayectoria)</strong></p>
+              <p><span class="meta-label">Rubro</span>Maderas, placas, herrajes y construcción en seco</p>
+            </div>
+            <div class="card meta-card">
+              <p><span class="meta-label">Enfoque</span><strong>Consultoría en Transformación Digital</strong></p>
+              <p><span class="meta-label">Marco metodológico</span>Laudon &amp; Laudon (16ª Ed.)</p>
+            </div>
+          </div>
+
+          <h2 class="section-title">1. Perfil Corporativo y Modelo de Negocio</h2>
+          <div class="split">
+            <div class="prose">
+              <p><strong>El Emporio del Terciado S.A.</strong> es una empresa comercializadora y distribuidora de maderas, placas aglomeradas y MDF melamínicos, fenólicos, herrajes e insumos para la construcción en seco (Durlock/Knauf).</p>
+              <p>Fundada en <strong>1962</strong> en la ciudad de La Plata, cuenta con más de seis décadas de liderazgo en el abastecimiento para carpintería, arquitectura y construcción.</p>
+              <p><strong>Segmentos de Demanda Atendidos:</strong></p>
+              <ul>
+                <li><strong>B2B (Mayorista e Industrial):</strong> Constructoras, carpinterías y fabricantes de muebles con compras por volumen, cuentas corrientes y corte programado.</li>
+                <li><strong>B2C (Minorista y Particular):</strong> Propietarios, instaladores independientes y público general (<em>Do It Yourself</em>).</li>
+              </ul>
+            </div>
+            <div class="callout callout-mission">
+              <p><b>Misión Organizacional:</b> Proveer a carpinteros, profesionales de la construcción y público en general una amplia variedad de maderas y placas de alta calidad, combinando asesoramiento técnico con servicios de corte computarizado de precisión.</p>
+              <p><b>Visión Estratégica:</b> Consolidarse como el referente digital e industrial de la madera y la construcción en seco en la región, integrando canales de autogestión online con excelencia operativa y logística.</p>
+            </div>
+          </div>
+
+          <h2 class="section-title">2. Propuesta de Valor y Capacidades Operativas</h2>
+          <p class="prose">La principal ventaja competitiva de <strong>El Emporio del Terciado S.A.</strong> radica en la <strong>integración vertical del servicio de dimensionado a medida</strong>:</p>
+          <ul class="feature-list">
+            <li><strong>Servicio Computarizado de Taller:</strong> Maquinaria industrial de última generación para optimización de corte de placas, pegado de cantos en PVC/ABS, fresado y mecanizado.</li>
+            <li><strong>Catálogo Integral de Construcción en Seco:</strong> Distribuidor líder en perfiles estructurales, placas de yeso y aislantes térmicos y acústicos bajo normas de calidad.</li>
+            <li><strong>Línea de Marca Propia (<em>Area Base</em>):</strong> Desarrollo de productos propios para garantizar estándares de terminación y control directo de márgenes.</li>
+            <li><strong>Capacidad de Escala y Logística:</strong> Depósito central y flota propia para abastecimiento mayorista a nivel regional y nacional.</li>
+          </ul>
+          <div class="grid grid-2">
+            <div class="card soft">
+              <p><b class="ink">Cobertura y Horarios de Atención:</b><br>
+              • Lunes a Viernes de 8:00 a 16:30 hs. | Sábados de 8:30 a 12:30 hs.<br>
+              • <b>Red de Sucursales en La Plata:</b> Casa Central (Calle 31), EGGER HAUS (Av. 44) y Sucursal Centenario.</p>
+            </div>
+            <div class="card soft-green">
+              <p><b class="green-dark">Diferencial de Servicio:</b><br>
+              Corte computarizado con software optimizador para minimizar desperdicios de placa y entregar paquetes rotulados a medida.</p>
+            </div>
+          </div>
+
+          <h2 class="section-title">3. Diagnóstico de Madurez Digital Organizacional</h2>
+          <p class="prose">Evaluación integral del nivel de madurez tecnológica y operativa de <strong>El Emporio del Terciado S.A.</strong> aplicando un marco multidimensional de 6 ejes (Estrategia, Tecnología, Datos, Procesos, Personas/Cultura y Clientes/Canales), fundamentado en la metodología de <em>Laudon &amp; Laudon</em> y respaldado por la auditoría de procesos y clientes.</p>
+
+          <h3 class="sub-title">🌐 Overall Review: Diagnóstico y Dictamen Global</h3>
+          <div class="grid grid-4">
+            <div class="card metric-card accent-red">
+              <div class="metric-value red">1.6 / 5.0</div>
+              <div class="metric-label">Nivel de Madurez Global (AS-IS)</div>
+              <div class="metric-foot"><b>Estado:</b> Inicial / Reactivo</div>
+            </div>
+            <div class="card metric-card accent-blue">
+              <div class="metric-value blue">-2.4 pts</div>
+              <div class="metric-label">Brecha vs. Benchmark Digital (4.0)</div>
+              <div class="metric-foot">Sector retail / distribución moderno</div>
+            </div>
+            <div class="card metric-card accent-amber">
+              <div class="metric-value amber">Silos Aislados</div>
+              <div class="metric-label">Arquitectura Predominante</div>
+              <div class="metric-foot">On-premise sin integración API</div>
+            </div>
+            <div class="card metric-card accent-green">
+              <div class="metric-value green">4.1 / 5.0</div>
+              <div class="metric-label">Meta de Transformación (TO-BE)</div>
+              <div class="metric-foot">Con ERP + CRM + Portal B2B + BI</div>
+            </div>
+          </div>
+
+          <div class="split split-top">
+            <div class="chart-wrap">
+              <h4 class="chart-title">🕸️ Matriz Radar: Estado Actual (AS-IS) vs. Objetivo (TO-BE)</h4>
+              <div class="chart chart-radar" id="chart-radar" role="img" aria-label="Radar de madurez digital: estado actual 1,6 sobre 5 y objetivo 4,1 sobre 5 en seis ejes."></div>
+            </div>
+            <div>
+              <h4 class="chart-title">📋 Dictamen Ejecutivo y Arquetipo Organizacional</h4>
+              <div class="callout">
+                <p><b>Arquetipo:</b> <i>"Líder Productivo Tradicional con Asimetría Digital y Cuello de Botella Operativo"</i>.</p>
+                <p>• <b>La Paradoja de Automatización:</b> La empresa destaca por su maquinaria de corte computarizado de alta precisión y calidad de catálogo (fortaleza física), pero su <i>back-office</i> y canales de atención funcionan con métodos manuales (papel, planillas dispersas y POS local aislado).</p>
+                <p>• <b>El Núcleo del Problema:</b> Al no ofrecer canales de autogestión online (despieces, cotizaciones y pedidos web), toda la carga operativa recae sobre el salón de ventas y WhatsApp, generando el <b>circuito de 3 filas</b> y saturación del personal.</p>
+                <p>• <b>Impacto en la Reputación:</b> Esta desarticulación informática es la causa raíz del <b>56% de quejas por mala atención</b> y <b>17% por demoras</b> detectadas en Google Maps.</p>
+              </div>
+              <div class="callout callout-warn">
+                💡 <b>Veredicto de Consultoría:</b> La transformación no requiere cambiar el modelo de negocio ni el producto —ambos sumamente valorados— sino <b>orquestar un ecosistema digital integrado (ERP + CRM + Portal B2B de Despiece + BI)</b> que elimine la fricción en el cliente y libere al personal de tareas manuales.
+              </div>
+            </div>
+          </div>
+
+          <h3 class="sub-title">📌 Pilares Clave del Diagnóstico Transversal</h3>
+          <div class="grid grid-3">
+            <div class="foda-card foda-a">
+              <b class="amber-dark">1. Desconexión de Sistemas (Silos)</b>
+              <p>El software de optimización de cortes del taller no dialoga con el sistema de facturación ni con el inventario de salón. Esta fragmentación obliga a reingresar datos en papel, genera retrasos y quiebres de stock no alertados al cliente.</p>
+            </div>
+            <div class="foda-card foda-d">
+              <b class="red-dark">2. Sobrecarga y Fricción Humana</b>
+              <p>Los vendedores atienden simultáneamente el mostrador presencial, teléfonos fijos y WhatsApp personal. La falta de automatización y CRM genera agotamiento en el equipo y un trato percibido como apurado o deficiente.</p>
+            </div>
+            <div class="foda-card foda-f">
+              <b class="green-dark">3. Potencial B2B Inexplorado</b>
+              <p>Los carpinteros y arquitectos (público B2B) demandan poder cotizar y mandar despieces desde su taller o smartphone 24/7. Digitalizar este flujo representaría un salto exponencial en fidelización y eficiencia de escala.</p>
+            </div>
+          </div>
+
+          <h3 class="sub-title">📊 Evaluación Detallada por Dimensión (Modelo de 6 Ejes)</h3>
+          <p class="caption">Puntuación por eje basada en la escala de madurez Laudon (1: Inicial, 2: Oportunista, 3: Definido, 4: Gestionado, 5: Optimizado):</p>
+
+          <div class="grid grid-3 dim-grid">
+            <div class="dim-col">
+              <div class="foda-card foda-blue">
+                <div class="card-head"><h4 class="blue">1. Estrategia Digital</h4><span class="score">1.5 / 5.0</span></div>
+                <p class="dim-level"><b>Nivel: Inicial / Reactivo</b></p>
+                <p class="dim-text">• Visión orientada al oficio y comercio tradicional sin plan director de TI.<br>• Inversiones en tecnología concentradas en maquinaria física sin hoja de ruta de software.<br>• Inexistencia de métricas (KPIs) para evaluar canales digitales o satisfacción.</p>
+              </div>
+              <div class="foda-card foda-d">
+                <div class="card-head"><h4 class="red">4. Procesos de Negocio</h4><span class="score">1.5 / 5.0</span></div>
+                <p class="dim-level"><b>Nivel: Manual / Fragmentado</b></p>
+                <p class="dim-text">• Circuito presencial ineficiente de 3 filas sucesivas (mostrador ➔ caja ➔ entrega/taller).<br>• Dependencia crítica de soporte papel (remitos, planos a mano) para pasar pedidos a taller.<br>• Gestión reactiva de compras y stock sin automatización de puntos de reposición.</p>
+              </div>
+            </div>
+            <div class="dim-col">
+              <div class="foda-card foda-a">
+                <div class="card-head"><h4 class="amber-dark">2. Tecnología e Infra</h4><span class="score">1.8 / 5.0</span></div>
+                <p class="dim-level"><b>Nivel: Silos Aislados / On-Premise</b></p>
+                <p class="dim-text">• Facturación y POS monousuario local sin infraestructura Cloud ni redundancia.<br>• Falta de interoperabilidad entre software de corte, caja y depósito.<br>• Riesgo operativo por copias de seguridad locales y vulnerabilidades de continuidad.</p>
+              </div>
+              <div class="foda-card foda-f">
+                <div class="card-head"><h4 class="green">5. Personas y Cultura</h4><span class="score">2.0 / 5.0</span></div>
+                <p class="dim-level"><b>Nivel: Tradicional / Sobrecargado</b></p>
+                <p class="dim-text">• Alto conocimiento del oficio maderero pero cultura reacia o poco habituada a herramientas digitales.<br>• Personal sobreexigido por tareas administrativas manuales y atención multicanal no asistida.<br>• Necesidad prioritaria de capacitación en atención al cliente y uso de sistemas unificados.</p>
+              </div>
+            </div>
+            <div class="dim-col">
+              <div class="foda-card foda-slate">
+                <div class="card-head"><h4 class="slate-dark">3. Datos y Analítica</h4><span class="score">1.2 / 5.0</span></div>
+                <p class="dim-level"><b>Nivel: Básico / No Integrado</b></p>
+                <p class="dim-text">• Decisiones de abastecimiento y precios basadas en intuición y planillas Excel dispersas.<br>• Datos no estructurados (reseñas de clientes, chats de WhatsApp) totalmente desaprovechados.<br>• El presente proyecto demuestra el alto valor oculto en los datos para la toma de decisiones.</p>
+              </div>
+              <div class="foda-card foda-pink">
+                <div class="card-head"><h4 class="pink-dark">6. Clientes y Canales</h4><span class="score">1.6 / 5.0</span></div>
+                <p class="dim-level"><b>Nivel: Multicanal Desarticulado</b></p>
+                <p class="dim-text">• Canales remotos (WhatsApp y teléfono) sin CRM, chatbots ni trazabilidad de estados.<br>• Inexistencia de portal web transaccional o autogestión de despieces para clientes B2B.<br>• 68.3% de opiniones en Google Maps sin respuesta institucional ni escucha activa.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 2. EVIDENCIA ================= -->
+        <section class="page" id="evidencia" data-page="evidencia" hidden>
+          <header class="page-head">
+            <p class="eyebrow">Entrega 1 · Trabajo de campo</p>
+            <h2>Evidencia Empírica: Auditoría de Reseñas de Google Maps</h2>
+            <p class="lead" id="ev-subtitle"></p>
+          </header>
+
+          <div class="grid grid-4 metrics">
+            <div class="card metric-card">
+              <div class="metric-value" data-bind="total">1.075</div>
+              <div class="metric-label">Reseñas en filtro actual</div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-value"><span data-bind="with-text">608</span> (<span data-bind="pct-text">56.6%</span>)</div>
+              <div class="metric-label">Opiniones con comentario escrito</div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-value"><span data-bind="avg">4.07</span> / 5.0</div>
+              <div class="metric-label">Calificación promedio filtrada</div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-value"><span data-bind="with-response">307</span> (<span data-bind="pct-response">28.6%</span>)</div>
+              <div class="metric-label">Tasa de respuesta del comercio</div>
+            </div>
+          </div>
+
+          <div class="tabs" data-tabs id="tabs-evidencia">
+            <div class="tablist" role="tablist" aria-label="Vistas de la evidencia empírica">
+              <button class="tab" role="tab" id="tab-ev-1" aria-controls="panel-ev-1" aria-selected="true">🎯 Evidencia FODA (<span data-bind="tab-pos">817</span> vs <span data-bind="tab-neg">258</span>)</button>
+              <button class="tab" role="tab" id="tab-ev-2" aria-controls="panel-ev-2" aria-selected="false" tabindex="-1">📊 Temáticas (NLP)</button>
+              <button class="tab" role="tab" id="tab-ev-3" aria-controls="panel-ev-3" aria-selected="false" tabindex="-1">🏢 Sucursales</button>
+              <button class="tab" role="tab" id="tab-ev-4" aria-controls="panel-ev-4" aria-selected="false" tabindex="-1">📅 Evolución anual</button>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-ev-1" aria-labelledby="tab-ev-1">
+              <h3>Base Empírica para la Matriz FODA (<span data-bind="range">2016 - 2026</span>)</h3>
+              <p class="prose">Para el período <b data-bind="range">2016 - 2026</b> (con <b data-bind="period-total">1.075</b> reseñas relevadas en <i data-bind="sucursal">Todas las sucursales</i>), la evidencia empírica respalda objetivamente la construcción de la matriz FODA:</p>
+
+              <div class="grid grid-2">
+                <div class="foda-box foda-box-pos">
+                  <h4>🛡️ Sustento Empírico de FORTALEZAS (<span data-bind="foda-pos">817</span> Reseñas ⭐4-5 | <span data-bind="foda-pct-pos">76.0%</span>)</h4>
+                  <ul>
+                    <li><b>F1. Precisión en Cortes y Taller:</b> <b data-bind="foda-pos-cortes">22</b> menciones elogian la exactitud del corte computarizado y terminación de cantos en el período.</li>
+                    <li><b>F2. Asesoramiento Profesional en Salón:</b> <b data-bind="foda-pos-atencion">293</b> comentarios destacan el buen trato y conocimiento técnico cuando la atención es personalizada.</li>
+                    <li><b>F3. Variedad y Catálogo Integral:</b> Alta valoración de la disponibilidad de tableros melamínicos, fenólicos e insumos de construcción en seco.</li>
+                    <li><b>F4. Precios y Escala Mayorista:</b> <b data-bind="foda-pos-precios">16</b> opiniones destacan convenios comerciales, promociones y cuentas corrientes B2B.</li>
+                    <li><b>F5. Trayectoria y Respaldo de Marca:</b> Consolidación histórica como el referente maderero en La Plata.</li>
+                  </ul>
+                </div>
+                <div class="foda-box foda-box-neg">
+                  <h4>⚠️ Sustento Empírico de DEBILIDADES (<span data-bind="foda-neg">258</span> Reseñas ⭐1-3 | <span data-bind="foda-pct-neg">24.0%</span>)</h4>
+                  <ul>
+                    <li><b>D1. Circuito de 3 Filas y Colapso de Salón:</b> <b data-bind="foda-neg-atencion">90</b> quejas por fricción en mostrador/caja y <b data-bind="foda-neg-espera">32</b> por demoras en horas pico.</li>
+                    <li><b>D2. Incomunicación en Canales Remotos:</b> <b data-bind="foda-neg-canales">11</b> quejas formales por llamadas desatendidas y demoras en WhatsApp.</li>
+                    <li><b>D3. Inexistencia de Portal Web B2B:</b> Necesidad presencial obligatoria para pedir presupuestos y órdenes de despiece.</li>
+                    <li><b>D4. Tiempos de Entrega de Taller:</b> <b data-bind="foda-neg-cortes">6</b> reclamos por plazos extensos y <b data-bind="foda-neg-stock">3</b> por quiebres de stock no avisados.</li>
+                    <li><b>D5. Desatención de Reputación Online:</b> <b data-bind="foda-neg-sinrespuesta">70.9%</b> de las opiniones negativas en este período no tienen respuesta oficial.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="split split-top">
+                <div class="chart-wrap">
+                  <h4 class="chart-title">📊 Balance empírico (<span data-bind="range">2016 - 2026</span> | <span data-bind="period-total">1.075</span> reseñas)</h4>
+                  <div class="chart" id="chart-balance" role="img" aria-label="Balance de opiniones positivas y críticas."></div>
+                </div>
+                <div class="callout">
+                  <p><b>Diagnóstico Estratégico del Período (<span data-bind="range">2016 - 2026</span>):</b></p>
+                  <p>El <b data-bind="foda-pct-pos">76.0%</b> de satisfacción demuestra la fortaleza en producto, variedad de stock y capacidad de taller.</p>
+                  <p>El <b data-bind="foda-pct-neg">24.0%</b> de fricción confirma la necesidad de implementar soluciones de <b>Transformación Digital</b> (ERP, CRM y Portal Web) para resolver cuellos de botella de mostrador y canales remotos.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-ev-2" aria-labelledby="tab-ev-2" hidden>
+              <div class="split">
+                <div class="chart-wrap">
+                  <h3>Categorización Temática NLP (<span data-bind="range">2016 - 2026</span>)</h3>
+                  <div class="chart" id="chart-nlp" role="img" aria-label="Cantidad de menciones por categoría temática."></div>
+                </div>
+                <div class="chart-wrap">
+                  <h3>Distribución de Severidad (<span data-bind="range">2016 - 2026</span>)</h3>
+                  <div class="chart" id="chart-stars" role="img" aria-label="Distribución de reseñas por cantidad de estrellas."></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-ev-3" aria-labelledby="tab-ev-3" hidden>
+              <h3>Auditoría Consolidada por Sucursal (<span data-bind="range">2016 - 2026</span> | <span data-bind="suc-total">1.075</span> Reseñas)</h3>
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr><th>Sucursal</th><th>Total Reseñas</th><th>Promedio ⭐</th><th>Quejas (≤3 ⭐)</th><th>% Quejas</th><th>Respuestas</th></tr>
+                  </thead>
+                  <tbody id="suc-tbody"></tbody>
+                </table>
+              </div>
+              <div class="split split-top">
+                <div class="chart-wrap">
+                  <h4 class="chart-title">📊 Calificaciones por sucursal (<span data-bind="range">2016 - 2026</span>)</h4>
+                  <div class="chart" id="chart-sucursal" role="img" aria-label="Calificaciones por sucursal."></div>
+                </div>
+                <div class="callout">
+                  <p><b>Comportamiento en el período (<span data-bind="range">2016 - 2026</span>):</b></p>
+                  <p>• Se registraron <b data-bind="suc-total">1.075</b> reseñas distribuidas en las sedes comerciales.</p>
+                  <p>• Permite evaluar si las iniciativas o problemas de atención se concentraron en una sucursal específica a lo largo del tiempo.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-ev-4" aria-labelledby="tab-ev-4" hidden>
+              <h3>Evolución Temporal de Opiniones por Año</h3>
+              <div class="chart chart-tall" id="chart-temporal" role="img" aria-label="Evolución anual de reseñas por cantidad de estrellas."></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 3. PROCESOS ================= -->
+        <section class="page" id="procesos" data-page="procesos" hidden>
+          <header class="page-head">
+            <p class="eyebrow">Entrega 1 · Relevamiento</p>
+            <h2>Mapeo de Procesos AS-IS y Cuellos de Botella</h2>
+            <p class="lead">Relevamiento paso a paso de los circuitos operativos clave y su correlación con la evidencia empírica</p>
+          </header>
+
+          <div class="tabs" data-tabs id="tabs-procesos">
+            <div class="tablist" role="tablist" aria-label="Procesos relevados">
+              <button class="tab" role="tab" id="tab-pr-1" aria-controls="panel-pr-1" aria-selected="true">a) Venta, Corte y Entrega de Placas</button>
+              <button class="tab" role="tab" id="tab-pr-2" aria-controls="panel-pr-2" aria-selected="false" tabindex="-1">b) Gestión de Stock e Inventario</button>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-pr-1" aria-labelledby="tab-pr-1">
+              <h3>Circuito AS-IS: Proceso de Venta, Corte y Entrega de Placas</h3>
+              <p class="prose">Este proceso comprende desde el ingreso del cliente (presencial o remoto) hasta el retiro o flete del pedido fraccionado.</p>
+              <div class="split">
+                <div>
+                  <div class="process-card">
+                    <h4>Paso 1: Asesoramiento y Cotización en Mostrador</h4>
+                    <p><b>Entradas:</b> Solicitud del cliente, medidas preliminares o croquis en papel.<br>
+                    <b>Procesamiento:</b> El vendedor transcribe las medidas manualmente o en un software local. Si el cliente no es experto, el tiempo de asesoramiento se extiende.<br>
+                    <b>Salida:</b> Hoja de presupuesto impresa o cotización verbal.</p>
+                    <p class="footnote">📌 <i>Hipótesis operativa:</i> El vendedor atiende llamadas telefónicas y mostrador en simultáneo, generando demoras en piso.</p>
+                  </div>
+                  <div class="process-card">
+                    <h4>Paso 2: Facturación y Cobro en Caja</h4>
+                    <p><b>Entradas:</b> Presupuesto en mano y medio de pago.<br>
+                    <b>Procesamiento:</b> El cliente hace una segunda fila obligatoria para abonar. La cajera vuelve a cargar los datos en el sistema POS.<br>
+                    <b>Salida:</b> Factura y remito de corte físico en 2 copias.</p>
+                    <p class="footnote blue">📊 <i>Evidencia de campo:</i> El 56% de las quejas se concentran en la fricción de atención y lentitud en caja/mostrador.</p>
+                  </div>
+                  <div class="process-card">
+                    <h4>Paso 3: Taller de Corte y Optimización</h4>
+                    <p><b>Entradas:</b> Remito impreso derivado al taller.<br>
+                    <b>Procesamiento:</b> El operario carga el esquema en el optimizador computarizado. Si hay cola de trabajo acumulada, el plazo de entrega se estira de 2 a 3 semanas.<br>
+                    <b>Salida:</b> Placas cortadas, rotuladas y embaladas.</p>
+                  </div>
+                  <div class="process-card">
+                    <h4>Paso 4: Entrega o Flete</h4>
+                    <p><b>Entradas:</b> Comprobante de pago presentado en depósito.<br>
+                    <b>Procesamiento:</b> Tercera fila para control de mercadería y carga en vehículo particular o coordinación manual de flete.<br>
+                    <b>Salida:</b> Mercadería retirada y firma de conformidad.</p>
+                  </div>
+                </div>
+                <div>
+                  <div class="callout callout-danger">
+                    <h4>⚠️ Cuellos de Botella y Fricciones Detectadas</h4>
+                    <ul>
+                      <li><b>Triple Fila Obligatoria:</b> Venta → Caja → Depósito/Corte (genera el 17.3% de quejas por demoras).</li>
+                      <li><b>Desconexión de Canales:</b> Teléfono y WhatsApp no cuentan con catálogo en tiempo real ni turnero.</li>
+                      <li><b>Horarios rígidos de corte:</b> Rechazo de pedidos cerca del horario de cierre de taller.</li>
+                      <li><b>Falta de autogestión web:</b> El carpintero no puede cargar su despiece desde su taller.</li>
+                    </ul>
+                  </div>
+                  <p class="testimonial-label"><b>Testimonios del Proceso:</b></p>
+                  <blockquote class="quote-box">"Fui a pedir un presupuesto... la señora me atendió bastante mal, se ponía a responder mensajes del celular... me mandó a la parte de atrás a ver los modelos y que saque conclusiones... y después de todo te dicen entrega en 2 a 3 semanas." — <b>Sergio M.</b></blockquote>
+                </div>
+              </div>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-pr-2" aria-labelledby="tab-pr-2" hidden>
+              <h3>Circuito AS-IS: Proceso de Gestión de Stock e Inventario</h3>
+              <p class="prose">Este proceso abarca la reposición, almacenamiento, control de inventario y disponibilidad comercial de materiales.</p>
+              <div class="split">
+                <div>
+                  <div class="process-card">
+                    <h4>Paso 1: Consulta de Disponibilidad Comercial</h4>
+                    <p><b>Entradas:</b> Consulta de cliente en mostrador o WhatsApp.<br>
+                    <b>Procesamiento:</b> El vendedor consulta una planilla o sistema local que no descuenta stock en tiempo real ni reserva placas en proceso de corte.<br>
+                    <b>Salida:</b> Confirmación de stock al cliente.</p>
+                  </div>
+                  <div class="process-card">
+                    <h4>Paso 2: Detección de Quiebre de Stock Físico</h4>
+                    <p><b>Entradas:</b> Remito emitido enviado a depósito.<br>
+                    <b>Procesamiento:</b> El operario de depósito advierte que la placa solicitada se agotó o está dañada, obligando a anular la venta o reemplazar el material.<br>
+                    <b>Salida:</b> Fricción comercial, devoluciones o retrasos.</p>
+                    <p class="footnote blue">📊 <i>Evidencia de campo:</i> Clientes reportan confirmar stock por WhatsApp y al llegar al local no está disponible.</p>
+                  </div>
+                  <div class="process-card">
+                    <h4>Paso 3: Reabastecimiento a Proveedores</h4>
+                    <p><b>Entradas:</b> Conteo visual periódico o reclamo de faltante.<br>
+                    <b>Procesamiento:</b> Emisión manual de órdenes de compra a fabricantes líderes.<br>
+                    <b>Salida:</b> Recepción de camión y estiba en depósito.</p>
+                    <p class="footnote">📌 <i>Hipótesis operativa:</i> No existe punto de pedido automático (ROP / EOQ) integrado al sistema de facturación.</p>
+                  </div>
+                </div>
+                <div>
+                  <div class="callout callout-danger">
+                    <h4>⚠️ Ineficiencias de Inventario Detectadas</h4>
+                    <ul>
+                      <li><b>Asimetría de Información:</b> Desalineación entre lo que el vendedor ve en pantalla y las placas físicamente aptas en depósito.</li>
+                      <li><b>Falta de Reserva Automática:</b> Las placas asignadas a un pedido de corte no se bloquean de inmediato, generando sobreventa.</li>
+                      <li><b>Gestión Reactiva de Compras:</b> Reposición basada en urgencias en lugar de pronósticos de demanda impulsados por datos (BI).</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 4. FODA ================= -->
+        <section class="page" id="foda" data-page="foda" hidden>
+          <header class="page-head">
+            <p class="eyebrow">Entrega 1 · Estrategia</p>
+            <h2>Matriz FODA Cruzada con Enfoque Tecnológico</h2>
+            <p class="lead">Cruce estratégico validado con evidencia empírica de minería de opiniones (Google Maps)</p>
+          </header>
+
+          <div class="tabs" data-tabs id="tabs-foda">
+            <div class="tablist" role="tablist" aria-label="Vistas del FODA">
+              <button class="tab" role="tab" id="tab-fo-1" aria-controls="panel-fo-1" aria-selected="true">Matriz Cuadrante FODA</button>
+              <button class="tab" role="tab" id="tab-fo-2" aria-controls="panel-fo-2" aria-selected="false" tabindex="-1">Cruces Estratégicos (FO, DO, FA, DA)</button>
+              <button class="tab" role="tab" id="tab-fo-3" aria-controls="panel-fo-3" aria-selected="false" tabindex="-1">Diagnóstico de Brecha (Discurso vs. Realidad)</button>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-fo-1" aria-labelledby="tab-fo-1">
+              <div class="grid grid-2">
+                <div class="foda-card foda-f">
+                  <h4>🛡️ FORTALEZAS (Internas)</h4>
+                  <ul>
+                    <li><b>Taller Computarizado:</b> Maquinaria industrial de corte y pegado de cantos con optimizador digital de placas.</li>
+                    <li><b>Trayectoria y Respaldo (+60 años):</b> Alianzas comerciales sólidas con fabricantes líderes de placas y perfiles de construcción en seco.</li>
+                    <li><b>Variedad de Catálogo y Escala:</b> Capacidad de abastecer grandes obras y distribución mayorista en la región.</li>
+                    <li><b>Desarrollo de Marca Propia:</b> Línea de productos <i>Area Base</i> para control de calidad y margen.</li>
+                  </ul>
+                </div>
+                <div class="foda-card foda-o">
+                  <h4>🚀 OPORTUNIDADES (Externas)</h4>
+                  <ul>
+                    <li><b>Portal Web B2B de Despiece 24/7:</b> Habilitar cotizador y optimizador online para carpinteros y profesionales.</li>
+                    <li><b>CRM Conversacional y Automatización:</b> Respuestas instantáneas en WhatsApp para stock, horarios y seguimiento de pedidos.</li>
+                    <li><b>Integración ERP End-to-End:</b> Trazabilidad de inventario en tiempo real entre salón, depósito y taller.</li>
+                    <li><b>Reingeniería 'Smart Retail':</b> Turnero digital por QR y cobro unificado en punto de venta.</li>
+                  </ul>
+                </div>
+                <div class="foda-card foda-d">
+                  <h4>⚠️ DEBILIDADES (Internas)</h4>
+                  <ul>
+                    <li><b>Circuito de Compra Fragmentado:</b> Triple fila obligatoria (Venta → Caja → Despacho) sin terminales mPOS ni turnero digital.</li>
+                    <li><b>Canales Remotos Saturados:</b> WhatsApp y teléfono atendidos por personal de piso sin CRM ni chatbot de derivación.</li>
+                    <li><b>Inexistencia de Portal Web de Autogestión:</b> El cliente profesional no puede despiezar, cotizar ni reservar turnos online.</li>
+                    <li><b>Sistemas Desintegrados:</b> Desconexión entre stock de salón, taller de corte y facturación.</li>
+                  </ul>
+                </div>
+                <div class="foda-card foda-a">
+                  <h4>⚡ AMENAZAS (Externas)</h4>
+                  <ul>
+                    <li><b>Competencia Nativa Digital:</b> Grandes superficies (Easy, Sodimac) y madereras con cotizadores web y checkout ágil.</li>
+                    <li><b>Nuevas Generaciones de Clientes:</b> Profesionales y público DIY que exigen atención 100% digital e inmediata.</li>
+                    <li><b>Deterioro de Reputación Online:</b> Impacto negativo de reseñas visibles en Google Maps sin gestión de respuesta sistemática.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-fo-2" aria-labelledby="tab-fo-2" hidden>
+              <h3>Matriz de Cruces Estratégicos</h3>
+              <div class="grid grid-2">
+                <div class="card">
+                  <h4>🌟 Estrategias FO (Apalancamiento)</h4>
+                  <ul>
+                    <li><b>Plataforma Web de Despiece 24/7:</b> Conectar el optimizador de cortes interno a una interfaz web para que carpinteros carguen planos y reserven turnos.</li>
+                    <li><b>Portal B2B de Construcción en Seco:</b> Aprovechar el liderazgo de catálogo para ofrecer a constructoras abastecimiento con seguimiento de entregas.</li>
+                  </ul>
+                  <h4>🛡️ Estrategias FA (Blindaje)</h4>
+                  <ul>
+                    <li><b>Compatibilidad CAD/CAM:</b> Integración de software de diseño con el sistema de pedidos para crear barreras de salida frente a grandes cadenas.</li>
+                    <li><b>Garantía Digital de Calidad:</b> Certificación de tolerancias mínimas de corte y plazos garantizados para blindarse de competidores informales.</li>
+                  </ul>
+                </div>
+                <div class="card">
+                  <h4>🔄 Estrategias DO (Reingeniería Digital)</h4>
+                  <ul>
+                    <li><b>CRM Omnicanal en WhatsApp:</b> Desacoplar la atención telefónica/WhatsApp de los vendedores de piso mediante chatbots y agentes dedicados.</li>
+                    <li><b>Reingeniería de Salón (Turnero + mPOS):</b> Eliminar la triple fila implementando turneros por código QR y cobro en mostrador.</li>
+                  </ul>
+                  <h4>🚨 Estrategias DA (Mitigación de Riesgos)</h4>
+                  <ul>
+                    <li><b>Rediseño de Puestos y Descompresión Operativa:</b> Liberar a cajeras y vendedores de tareas manuales repetitivas para reducir el 56% de quejas por atención.</li>
+                    <li><b>Protocolo de Reputación Online:</b> Gestionar activamente las opiniones en Google Maps y capturar satisfacción en caja (CSAT/NPS).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-fo-3" aria-labelledby="tab-fo-3" hidden>
+              <h3>Contraste: Discurso Institucional vs. Procesos Reales</h3>
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr><th>Dimensión</th><th>Declaración</th><th>Realidad Operativa</th><th>Impacto</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1. Circuito de Atención</td><td>Búsqueda de la excelencia y máxima satisfacción.</td><td>3 filas obligatorias, demoras y personal saturado.</td><td>56% quejas de atención + 17% de demoras.</td></tr>
+                    <tr><td>2. Canales Remotos</td><td>Asesoramiento y sinergia fluida con el cliente.</td><td>Teléfonos que no atienden y WhatsApp sin CRM.</td><td>8.7% quejas por incomunicación y llamadas cortadas.</td></tr>
+                    <tr><td>3. Taller y Cortes</td><td>Sistema computarizado de optimización de vanguardia.</td><td>Optimizador de uso interno cerrado a clientes.</td><td>Demoras de 2 a 3 semanas y restricciones de horarios.</td></tr>
+                    <tr><td>4. Control de Stock</td><td>Garantizar procesos confiables y seguros.</td><td>Planillas desintegradas sin descuento en tiempo real.</td><td>Quiebres de stock no avisados al cliente.</td></tr>
+                    <tr><td>5. Reputación Digital</td><td>Calidad total y mejora continua permanente.</td><td>68.3% de reseñas negativas sin respuesta.</td><td>Erosión de imagen en Google Maps.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 5. EXPLORADOR ================= -->
+        <section class="page" id="resenas" data-page="resenas" hidden>
+          <header class="page-head">
+            <p class="eyebrow">Entrega 1 · Voz del cliente</p>
+            <h2>Explorador Interactivo de Reseñas</h2>
+            <p class="lead" id="resenas-subtitle"></p>
+          </header>
+
+          <div class="explorer-toolbar">
+            <label class="sr-only" for="review-search">Buscar reseñas</label>
+            <input id="review-search" type="search" placeholder="🔍 Buscar por palabras clave, autor o texto de respuesta…" autocomplete="off">
+            <span class="muted" id="search-caption" hidden></span>
+          </div>
+
+          <p class="muted" id="review-visible"></p>
+          <div id="review-list"></div>
+          <p class="empty" id="review-empty" hidden>No hay reseñas que coincidan con los filtros y la búsqueda actuales.</p>
+
+          <div class="explorer-actions">
+            <button type="button" class="btn" id="review-more" hidden>Mostrar más</button>
+            <button type="button" class="btn btn-primary" id="download-csv">📥 Descargar datos filtrados (CSV)</button>
+          </div>
+          <p class="caption">La descarga incluye las 17 columnas originales del dataset y respeta los filtros actuales.</p>
+        </section>
+
+        <!-- ================= 6. HOJA DE RUTA ================= -->
+        <section class="page" id="hoja-de-ruta" data-page="hoja-de-ruta" hidden>
+          <header class="page-head">
+            <p class="eyebrow">Entrega 1 · Próximos pasos</p>
+            <h2>Hoja de Ruta de Transformación Digital y Supuestos Base</h2>
+            <p class="lead">Recomendaciones estratégicas y registro de supuestos para garantizar consistencia en las Entregas 2 (ERP), 3 (CRM) y 4 (BI)</p>
+          </header>
+
+          <div class="grid grid-2">
+            <div class="card">
+              <h3>🎯 Hoja de Ruta de Iniciativas Tecnológicas</h3>
+              <ol class="roadmap">
+                <li>
+                  <b>Fase 1 (Corto Plazo - CX Inmediato):</b>
+                  <ul>
+                    <li>Implementar <b>CRM Conversacional en WhatsApp</b> con chatbot de FAQs y derivación inteligente.</li>
+                    <li>Protocolo de gestión de reputación online (respuesta en &lt; 48hs en Google Maps).</li>
+                    <li>Medición de satisfacción en caja vía QR / terminal táctil.</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>Fase 2 (Mediano Plazo - Reingeniería de Salón y ERP):</b>
+                  <ul>
+                    <li>Implementación de <b>ERP Integrado</b> para sincronizar mostrador, caja, depósito y cola de taller.</li>
+                    <li>Reingeniería del circuito de tienda: <b>Turnero digital por QR</b> y cobro integrado en puesto de venta (eliminación de la triple fila).</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>Fase 3 (Largo Plazo - Ecosistema Digital B2B / BI):</b>
+                  <ul>
+                    <li>Lanzamiento de <b>Portal Web de Despiece y Cotización Online 24/7</b> para carpinteros y arquitectos.</li>
+                    <li>Tableros de <b>Inteligencia de Negocios (BI)</b> para pronósticos de demanda y optimización de compras.</li>
+                  </ul>
+                </li>
+              </ol>
+            </div>
+            <div class="card">
+              <h3>📌 Hipótesis y Supuestos Base Consolidados</h3>
+              <p class="prose">Los siguientes supuestos operativos fundamentados regirán las siguientes fases del proyecto de consultoría (ERP, CRM y BI):</p>
+              <ul class="assumptions">
+                <li><b>[SB-01] Estructura Organizacional:</b> Asumimos una dotación de ~30 empleados (8 ventas/asesoramiento, 4 administración/cajas, 12 operarios de depósito/taller, 4 choferes y 2 directivos/gerencia), debido a la escala comercial y volumen de sucursales.</li>
+                <li><b>[SB-02] Software Transaccional Actual:</b> Asumimos que opera con un software POS / facturación contable tradicional no basado en la nube, con bases de datos locales no integradas.</li>
+                <li><b>[SB-03] Gestión de Stock:</b> Asumimos el uso de planillas Excel complementarias y conteos físicos periódicos, sin módulo de reaprovisionamiento automático (ROP/EOQ).</li>
+                <li><b>[SB-04] Atención Remota:</b> Asumimos que WhatsApp Web y las líneas telefónicas son atendidas por los mismos vendedores de mostrador sin asignación de turnos ni tickets.</li>
+                <li><b>[SB-05] Software de Taller:</b> Asumimos que cuentan con software optimizador de cortes de placa monousuario en PC de taller, sin conexión API con la web de la empresa.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p><b>Datos:</b> 1.075 reseñas públicas de Google Maps (relevamiento propio) · <b>Materia:</b> Tecnologías para la Gestión, FCE UNLP · <b>Caso:</b> El Emporio del Terciado S.A.</p>
+        <p><a href="https://github.com/reigenabril/tecnologias-webscrapping" target="_blank" rel="noopener">Repositorio</a> · <a href="./Entrega_1_Diagnostico_Digital_El_Emporio_del_Terciado.pdf" download>Informe PDF</a></p>
+      </footer>
+    </div>
+  </div>
+
+  <noscript>
+    <div class="noscript">
+      <p>Este dashboard necesita JavaScript para mostrar los gráficos y filtros interactivos. El informe completo está disponible en <a href="./Entrega_1_Diagnostico_Digital_El_Emporio_del_Terciado.pdf">PDF</a>.</p>
+    </div>
+  </noscript>
+</body>
+</html>
